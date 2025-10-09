@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\SimpleValues as SV;
 
 /**
- * Modelo Products
+ * Modelo Product
  *
  * Gerencia a tabela 'product', que armazena informações de produtos,
  * incluindo nome, preço e categoria.
  */
-class Products extends Model
+class Product extends Model
 {
     // Define a chave primária da tabela 'product'
     protected $primaryKey = 'p_id';
@@ -33,6 +33,7 @@ class Products extends Model
         'p_name',
         'p_price',
         'p_description',
+        'p_dt_created',
         'p_sv_category_pd_fk',
     ];
 
@@ -74,6 +75,24 @@ class Products extends Model
      */
     const VALIDATES_UPDATE = [
         'id'          => 'required|int|exists:product,p_id',
+    ];
+
+    const VALIDATES_MESSAGES =
+    [
+        'name.required'     => 'O campo Nome é obrigatório',
+        'name.string'       => 'O campo Nome deve ser um texto (string)',
+        'name.max'          => 'O campo Nome deve ter no máximo 255 caracteres',
+
+        'price.required'    => 'O campo Preço é obrigatório',
+        'price.numeric'     => 'O campo Preço deve ser um valor numérico',
+        'price.min'         => 'O campo Preço deve ser no mínimo 0.01',
+
+        'description.required' => 'O campo Descrição é obrigatório',
+        'description.string'   => 'O campo Descrição deve ser um texto (string)',
+
+        'category_id.required' => 'O campo ID da Categoria é obrigatório',
+        'category_id.int'      => 'O campo ID da Categoria deve ser um número inteiro',
+        'category_id.exists'   => 'O ID da Categoria selecionado não existe',
     ];
 
     /**

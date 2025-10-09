@@ -67,7 +67,7 @@ class Search
         // definindo o disco local para salvar os arquivos de index
         self::$index_disk = Storage::build([
             'driver' => 'local',
-            'root'   => storage_path() . '\susy_search_local_indexes',
+            'root'   => storage_path() . '\selfacc_search_local_indexes',
         ]);
 
         // definindo o model e coluna que será trabalhada
@@ -169,7 +169,7 @@ class Search
             $index_data[$pk_key] =
             [
                 self::$pk            => $pk_key,
-                self::$search_column => $value[self::$search_column],
+                self::$search_column => $value[self::$search_column] ?? '',
             ];
         }
 
