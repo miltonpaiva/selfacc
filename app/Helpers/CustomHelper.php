@@ -1,5 +1,6 @@
 <?php
     use App\Traits\DefaultResponseTrait as DfResponse;
+use Illuminate\Database\Eloquent\Model;
 
     if (!function_exists('convertFieldsMapToModel')){
         /**
@@ -59,9 +60,7 @@
             if($is_update && $model::VALIDATES_UPDATE)
                 $rules = array_merge($rules, $model::VALIDATES_UPDATE);
 
-            return array_map(function($rule){
-                return str_replace('[thrift_store_prefix]', getThriftStorePrefix(), $rule);
-            }, $rules);
+            return $rules;
         }
     }
 
@@ -74,12 +73,12 @@
          * @param  mixed $is_update
          * @return mixed
          */
-        function runValidates(object $request, array $validates): mixed
+        function runValidates(object $request, array $validates, ?array $messages = null): mixed
         {
             try {
-                $validated = $request->validate($validates, ERROR_MESSAGES);
+                $validated = $request->validate($validates, $messages);
             } catch (\Throwable $th) {
-                return DfResponse::error(ERROR_MESSAGES['request.error'] . ': ' . $th->getMessage(), $request->all());
+                return DfResponse::error('Erro na requisição: ' . $th->getMessage(), $request->all());
             }
 
             return $validated;
@@ -98,7 +97,7 @@
         function runModelValidates(object $request, object $model, ?bool $is_update = false): mixed
         {
             $validates = getModelValidates($model, $is_update);
-            return runValidates($request, $validates);
+            return runValidates($request, $validates, $model::VALIDATES_MESSAGES ?? null);
         }
     }
 
