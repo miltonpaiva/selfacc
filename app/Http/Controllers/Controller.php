@@ -20,7 +20,7 @@ abstract class Controller
      * @param  mixed $is_update
      * @return Illuminate\Http\JsonResponse
      */
-    public function newOrUpdateModel(object $request, object $model, array $messages, ?string $column_hashable = null, ?bool $is_update): \Illuminate\Http\JsonResponse
+    public function newOrUpdateModel(object $request, object $model, ?string $column_hashable = null, ?bool $is_update): \Illuminate\Http\JsonResponse
     {
         $validated_data = runModelValidates($request, $model, $is_update);
         if(is_object($validated_data)) return $validated_data;
@@ -37,25 +37,25 @@ abstract class Controller
             try {
                 $entity->update($model_data);
             } catch (\Throwable $th) {
-                return self::error($messages['entity.no_update'] . $th->getMessage(), $model_data, 500);
+                return self::error('Não foi possivel atualizar: ' . $th->getMessage(), $model_data, 500);
             }
 
             // realizando a indexação do usuario para busca
             (new Search($entity, ''))::runIndexes($entity->toArray());
 
-            return self::success($messages['entity.update'], $entity->toArray());
+            return self::success('Atualizado !', convertFieldsMapToForm($entity->toArray(), $model));
         }
 
         try {
             $entity = $model::create($model_data);
         } catch (\Throwable $th) {
-            return self::error($messages['entity.no_create'] . $th->getMessage(), $model_data, 500);
+            return self::error('Não foi possivel criar: ' . $th->getMessage(), $model_data, 500);
         }
 
         // realizando a indexação do usuario para busca
         (new Search($entity, ''))::runIndexes($entity->toArray());
 
-        return self::success($messages['entity.create'], $entity->toArray());
+        return self::success("Criado !", convertFieldsMapToForm($entity->toArray(), $model));
     }
 
     /**
