@@ -20,7 +20,7 @@ return new class extends Migration
 
             // Colunas de Dados
             $table->string('c_name');        // string, not null
-            $table->integer('c_code')->unique(); // int, not null
+            $table->integer('c_code'); // int, not null
             $table->string('c_phone')->nullable();   // string, nullable (pois não tem 'not null')
 
             // Timestamps Personalizados

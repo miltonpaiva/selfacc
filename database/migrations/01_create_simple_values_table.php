@@ -12,8 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('simple_values', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->id('sv_id');
+
+            $table->string('sv_title');
+            $table->string('sv_group');
+
+            $table->timestamp('sv_dt_created')->useCurrent();
+            $table->timestamp('sv_dt_updated')->useCurrent()->useCurrentOnUpdate();
         });
     }
 
