@@ -96,4 +96,38 @@ abstract class Controller
             'available_columns' => $model::LABELS_MAP,
         ]);
     }
+
+    public static function setAuthData(string $key, array $data, bool $invalidate = false): ?array
+    {
+        if ($invalidate) {
+            session(['auth_data' => null]);
+            setcookie('auth_data', '', time() + (86400 * 30), "/");
+            return null;
+        }
+
+        $auth_data = self::getAuthData();
+
+        $auth_data[$key] = $data;
+
+        session(['auth_data' => $auth_data]);
+        setcookie('auth_data', base64_encode(json_encode($auth_data)), time() + (86400 * 30), "/");
+
+        return $auth_data;
+    }
+
+    public static function getAuthData(): ?array
+    {
+        $auth_data = session('auth_data');
+
+        if($auth_data) return $auth_data;
+
+        if (!isset($_COOKIE['auth_data']) || !$_COOKIE['auth_data']) return null;
+
+        $auth_data = json_decode(base64_decode($_COOKIE['auth_data'] ?? ''), true);
+
+        if(!$auth_data) return null;
+
+        return $auth_data;
+    }
 }
+

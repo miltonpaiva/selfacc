@@ -72,11 +72,11 @@ class SimpleValues extends Model
      * @var array
      */
     const FIELDS_MAP = [
-        'id'                  => 'sv_id',
-        'title'               => 'sv_title',
-        'group'               => 'sv_group',
-        'date_created'        => 'sv_dt_created',
-        'date_updated'        => 'sv_dt_updated',
+        'id'           => 'sv_id',
+        'title'        => 'sv_title',
+        'group'        => 'sv_group',
+        'date_created' => 'sv_dt_created',
+        'date_updated' => 'sv_dt_updated',
     ];
 
     /**
@@ -85,11 +85,9 @@ class SimpleValues extends Model
      * @var array
      */
     const LABELS_MAP = [
-        'id'                  => '#',
-        'group'               => 'Grupo de Valor Simples',
-        'title'               => 'Titulo de Valor Simples',
-        'date_created'        => 'Data de Criação',
-        'date_updated'        => 'Data de Atualização',
+        'id'    => '#',
+        'group' => 'Grupo de Valor Simples',
+        'title' => 'Titulo de Valor Simples',
     ];
 
     /**
@@ -153,4 +151,23 @@ class SimpleValues extends Model
         return $new_value->getKey();
     }
 
+    /**
+     * list
+     *
+     * @param  string $group
+     * @return array
+     */
+    public static function list(string $group, bool $simple = false): array
+    {
+        $data = self::where(
+            [ ['sv_group', '=', $group], ]
+        )->get()->toArray();
+
+        if(!$simple) return convertFieldsMapToFormList($data, new self());
+
+        foreach ($data as $value)
+            $simple_data[$value['sv_id']] = $value['sv_title'];
+
+        return $simple_data ?? [];
+    }
 }

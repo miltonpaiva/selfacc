@@ -18,6 +18,7 @@ trait DefaultResponseTrait
     public static function success(?string $message = 'Success', ?array $data = [], ?int $code = JsonResponse::HTTP_OK): JsonResponse
     {
         return response()->json([
+            'success' => true,
             'status'  => 'success',
             'message' => $message,
             'data'    => $data,
@@ -36,9 +37,11 @@ trait DefaultResponseTrait
     public static function error(?string $message = 'Error', ?array $errors_data = [], ?int $code = JsonResponse::HTTP_BAD_REQUEST): JsonResponse
     {
         return response()->json([
+            'success'     => false,
             'status'      => 'error',
             'message'     => $message,
-            'errors_data' => $errors_data,
+            'data'        => $errors_data,
+            'code'        => $code,
         ], $code);
     }
 }

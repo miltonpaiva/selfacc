@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Account;
-use App\Models\Products;
+use App\Models\Product;
 
 /**
  * Modelo Order
@@ -34,6 +34,7 @@ class Order extends Model
         'o_account_fk',
         'o_product_fk',
         'o_quantity',
+        'o_observations',
         'o_total',
     ];
 
@@ -68,6 +69,8 @@ class Order extends Model
         // chaves estrangeiras
         'account_id' => 'required|int|exists:account,a_id',
         'product_id' => 'required|int|exists:product,p_id',
+
+        'observations' => 'max:255',
     ];
 
     /**
@@ -82,6 +85,33 @@ class Order extends Model
         'product_id'  => 'exclude',
     ];
 
+    const VALIDATES_MESSAGES =
+    [
+        'quantity.required'   => 'O campo Quantidade é obrigatório',
+        'quantity.integer'    => 'O campo Quantidade deve ser um número inteiro',
+        'quantity.min'        => 'O campo Quantidade deve ser no mínimo 1',
+
+        'total.required'      => 'O campo Total é obrigatório',
+        'total.numeric'       => 'O campo Total deve ser um valor numérico',
+        'total.min'           => 'O campo Total deve ser no mínimo 0.01',
+
+        'account_id.required' => 'O campo ID da Conta é obrigatório',
+        'account_id.int'      => 'O campo ID da Conta deve ser um número inteiro',
+        'account_id.exists'   => 'O ID da Conta selecionado não existe na base de dados',
+
+        'product_id.required' => 'O campo ID do Produto é obrigatório',
+        'product_id.int'      => 'O campo ID do Produto deve ser um número inteiro',
+        'product_id.exists'   => 'O ID do Produto selecionado não existe na base de dados',
+
+        'observations.string' => 'O campo Observações deve ser um texto (string)',
+        'observations.max'    => 'O campo Observações deve ter no máximo 255 caracteres',
+
+        'id.required'         => 'O campo ID é obrigatório',
+        'id.int'              => 'O campo ID deve ser um número inteiro',
+        'id.exists'           => 'O ID selecionado não existe na base de dados do Pedido',
+
+    ];
+
     /**
      * FIELDS_MAP - mapeamento dos campos do model para os campos do formulário/API
      *
@@ -92,6 +122,7 @@ class Order extends Model
         'account_id'          => 'o_account_fk',
         'product_id'          => 'o_product_fk',
         'quantity'            => 'o_quantity',
+        'observations'        => 'o_observations',
         'total'               => 'o_total',
         'date_created'        => 'o_dt_created',
         'date_updated'        => 'o_dt_updated',
@@ -110,6 +141,7 @@ class Order extends Model
         'total'               => 'Total do Item',
         'product_name'        => 'Produto',
         'table_number'        => 'Número da Mesa/Conta',
+        'observations'        => 'Observações',
         'date_created'        => 'Data do Pedido',
         'date_updated'        => 'Última Atualização',
     ];
@@ -152,7 +184,7 @@ class Order extends Model
      */
     public function getLinkedProduct(): \Illuminate\Database\Eloquent\Relations\hasOne
     {
-        return $this->hasOne(Products::class, 'p_id', 'o_product_fk');
+        return $this->hasOne(Product::class, 'p_id', 'o_product_fk');
     }
 
     // --- ACCESSORS ---
@@ -165,7 +197,7 @@ class Order extends Model
     public function getAddedLinkedProductNameAttribute(): ?string
     {
         $product = $this->getLinkedProduct()->first();
-        // Assume que o modelo Products tem a coluna 'p_name'
+        // Assume que o modelo Product tem a coluna 'p_name'
         return $product ? $product->p_name : null;
     }
 
@@ -179,5 +211,27 @@ class Order extends Model
         $account = $this->getLinkedAccount()->first();
         // Assume que o modelo Account tem a coluna 'a_table_number'
         return $account ? $account->a_table_number : null;
+    }
+
+    public static function getActivesByTableNumber(int $table_number): ?array
+    {
+        $accounts = Account::where(
+            [ ['a_table_number', '=', $table_number], ]
+        )->get()->toArray();
+
+        $accounts_ids = array_column($accounts, 'a_id');
+        $orders       = Order::whereIn('o_account_fk', $accounts_ids)->get()->toArray();
+
+        $orders = array_map(function ($order) use ($accounts) {
+            $account = searchAll($accounts, 'a_id', $order['o_account_fk'], true);
+
+            $order['customer_name']       = $account['added_linked_customer_name']      ?? 'não identificado';
+            $order['status_account_name'] = $account['added_linked_status_description'] ?? 'não identificado';
+            $order['status_account_id']   = $account['a_sv_status_ac_fk']               ?? 'não identificado';
+
+            return $order;
+        }, $orders);
+
+        return convertFieldsMapToFormList($orders, new self());
     }
 }

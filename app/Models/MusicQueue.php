@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Account;
-use App\Models\Customers;
+use App\Models\Customer;
 use App\Models\SimpleValues as SV; // Usando o alias SV
 
 /**
@@ -34,6 +34,7 @@ class MusicQueue extends Model
         'mq_id',
         'mq_uri',
         'mq_code',
+        'mq_str',
         'mq_position',
         'mq_is_auction',
         'mq_account_fk',
@@ -69,8 +70,9 @@ class MusicQueue extends Model
         // campos de dados
         'uri'          => 'required|string|max:255',
         'code'         => 'required|string|max:255',
+        'data'         => 'required|string|max:255',
         'position'     => 'required|int|min:1',
-        'is_auction'   => 'required|boolean',
+        'is_auction'   => 'boolean',
 
         // chaves estrangeiras
         'account_id'   => 'required|int|exists:account,a_id',
@@ -90,6 +92,44 @@ class MusicQueue extends Model
         'customer_id'  => 'exclude',
     ];
 
+    const VALIDATES_MESSAGES =
+    [
+        'uri.required'     => 'O campo URI é obrigatório',
+        'uri.string'       => 'O campo URI deve ser um texto (string)',
+        'uri.max'          => 'O campo URI deve ter no máximo 255 caracteres',
+
+        'code.required'    => 'O campo Código é obrigatório',
+        'code.string'      => 'O campo Código deve ser um texto (string)',
+        'code.max'         => 'O campo Código deve ter no máximo 255 caracteres',
+
+        'data.required'  => 'O campo dados é obrigatório',
+        'data.string'    => 'O campo dados deve ser um texto (string)',
+        'data.max'       => 'O campo dados deve ter no máximo 255 caracteres',
+
+        'position.required' => 'O campo Posição é obrigatório',
+        'position.int'      => 'O campo Posição deve ser um número inteiro',
+        'position.min'      => 'O campo Posição deve ser no mínimo 1',
+
+        'is_auction.required' => 'O campo É Leilão é obrigatório',
+        'is_auction.boolean'  => 'O campo É Leilão deve ser verdadeiro ou falso',
+
+        'account_id.required'  => 'O campo ID da Conta é obrigatório',
+        'account_id.int'       => 'O campo ID da Conta deve ser um número inteiro',
+        'account_id.exists'    => 'O ID da Conta selecionado não existe na base de dados',
+
+        'customer_id.required' => 'O campo ID do Cliente é obrigatório',
+        'customer_id.int'      => 'O campo ID do Cliente deve ser um número inteiro',
+        'customer_id.exists'   => 'O ID do Cliente selecionado não existe na base de dados',
+
+        'status_id.required'   => 'O campo ID do Status é obrigatório',
+        'status_id.int'        => 'O campo ID do Status deve ser um número inteiro',
+        'status_id.exists'     => 'O ID do Status selecionado não existe na base de dados',
+
+        'id.required'      => 'O campo ID é obrigatório',
+        'id.int'           => 'O campo ID deve ser um número inteiro',
+        'id.exists'        => 'O ID selecionado não existe na base de dados da Fila de Música',
+    ];
+
     /**
      * FIELDS_MAP - mapeamento dos campos do model para os campos do formulário/API
      *
@@ -99,6 +139,7 @@ class MusicQueue extends Model
         'id'                  => 'mq_id',
         'uri'                 => 'mq_uri',
         'code'                => 'mq_code',
+        'data'                => 'mq_str',
         'position'            => 'mq_position',
         'is_auction'          => 'mq_is_auction',
         'account_id'          => 'mq_account_fk',
@@ -119,6 +160,7 @@ class MusicQueue extends Model
         'id'                  => '#',
         'uri'                 => 'URI da Música (Link/ID)',
         'code'                => 'Código da Música',
+        'data'                => 'Dados da musica',
         'position'            => 'Posição na Fila',
         'is_auction'          => 'É Leilão',
         'account_id'          => 'ID da Conta Vinculada',
@@ -168,7 +210,7 @@ class MusicQueue extends Model
      */
     public function getLinkedCustomer(): \Illuminate\Database\Eloquent\Relations\hasOne
     {
-        return $this->hasOne(Customers::class, 'c_id', 'mq_customer_fk');
+        return $this->hasOne(Customer::class, 'c_id', 'mq_customer_fk');
     }
 
     /**
@@ -191,7 +233,7 @@ class MusicQueue extends Model
     public function getAddedLinkedCustomerNameAttribute(): ?string
     {
         $customer = $this->getLinkedCustomer()->first();
-        // Assume que o modelo Customers tem a coluna 'c_name'
+        // Assume que o modelo Customer tem a coluna 'c_name'
         return $customer ? $customer->c_name : null;
     }
 
@@ -205,5 +247,40 @@ class MusicQueue extends Model
         $status = $this->getLinkedStatus()->first();
         // Assume que o modelo SimpleValues tem a coluna 'sv_title'
         return $status ? $status->sv_title : null;
+    }
+
+    public static function getQueue(): array
+    {
+        $queue = self::where([
+            ['mq_sv_status_mq_fk', '=', SV::getValueId('status_mq', 'Na Fila')],
+        ])->get()->toArray();
+
+        $queue = array_map(function ($item) {
+            $data_arr = explode(';', $item['mq_str']);
+            $item = [
+                'id'           => $item['mq_code'],
+                'name'         => $data_arr[0],
+                'duration_min' => $data_arr[2],
+                'uri'          => $item['mq_uri'],
+                'album_name'   => '',
+                'artists'      => $data_arr[1],
+                'customer'     => $item['added_linked_customer_name'],
+            ];
+
+            return $item;
+        }, $queue);
+
+        return $queue;
+    }
+
+    public static function setReproducing(string $code): void
+    {
+        $next = self::where([
+            ['mq_code',            '=', $code],
+            ['mq_sv_status_mq_fk', '=', SV::getValueId('status_mq', 'Na Fila')],
+        ])->first();
+
+        $next->mq_sv_status_mq_fk = SV::getValueId('status_mq', 'Reproduzindo');
+        $next->save();
     }
 }

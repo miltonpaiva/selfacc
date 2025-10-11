@@ -24,7 +24,7 @@ use Illuminate\Database\Eloquent\Model;
 
     if (!function_exists('convertFieldsMapToForm')){
         /**
-         * convertFieldsMapToForm - converte os campos de um array
+         * convertFieldsMapToForm - converte os campos de um array 
          * com base no mapeamento definido no model
          *
          * @param  mixed $data
@@ -41,6 +41,23 @@ use Illuminate\Database\Eloquent\Model;
             }
 
             return $new_data ?? [];
+        }
+    }
+
+    if (!function_exists('convertFieldsMapToFormList')){
+        /**
+         * convertFieldsMapToFormList - converte os campos de um array multidimensional
+         * com base no mapeamento definido no model
+         *
+         * @param  mixed $data
+         * @param  mixed $model
+         * @return array
+         */
+        function convertFieldsMapToFormList(array $data, object $model): array
+        {
+            return array_map(function ($data) use ($model){
+                return convertFieldsMapToForm($data, $model);
+            }, $data);
         }
     }
 
@@ -97,7 +114,7 @@ use Illuminate\Database\Eloquent\Model;
         function runModelValidates(object $request, object $model, ?bool $is_update = false): mixed
         {
             $validates = getModelValidates($model, $is_update);
-            return runValidates($request, $validates, $model::VALIDATES_MESSAGES ?? null);
+            return runValidates($request, $validates, defined(get_class($model) . '::VALIDATES_MESSAGES')? $model::VALIDATES_MESSAGES : []);
         }
     }
 
@@ -148,3 +165,50 @@ use Illuminate\Database\Eloquent\Model;
             return json_decode(json_encode($obj), true);
         }
     }
+
+    if (!function_exists('slugify')){
+        /**
+         * slugify - retorna o slug de uma string
+         *
+         * @param  mixed $text
+         * @param  mixed $separator
+         * @return string
+         */
+        function slugify(mixed $text, ?string $separator = '-'): ?string
+        {
+            if (!$text || !is_string($text)) return $text;
+
+            // Convert to lowercase
+            $text = mb_strtolower($text, 'UTF-8');
+
+            // Replace non-ASCII characters with their ASCII equivalents (transliteration)
+            // This example uses a basic replacement, a library is more robust for full Unicode support
+            $text = iconv('UTF-8', 'ASCII//TRANSLIT', $text);
+
+            // Remove unwanted characters (keep letters, numbers, and hyphens)
+            $text = preg_replace('/[^a-z0-9-]+/', '-', $text);
+
+            // Replace multiple hyphens with a single hyphen
+            $text = preg_replace('/-+/', '-', $text);
+
+            // Trim hyphens from the beginning and end
+            $text = trim($text, $separator);
+
+            return $text;
+        }
+    }
+
+    if (!function_exists('getTimeStr')){
+        /**
+         * getTimeStr - retorna o tempo baseado nos milisegundos informados
+         *
+         * @param  mixed $text
+         * @param  mixed $separator
+         * @return string
+         */
+        function getTimeStr(int $ms): ?string
+        {
+            return sprintf("%02d", round(($ms / 60000))) . ':' . sprintf("%02d", round(($ms / 10000)));
+        }
+    }
+

@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Customers;
+use App\Models\Customer;
 use App\Models\SimpleValues as SV; // Usando o alias SV
 
 /**
@@ -64,7 +64,7 @@ class Account extends Model
     const VALIDATES = [
         // campos de dados
         'table_number'   => 'required|int|min:1',
-        'total_consumed' => 'required|numeric|min:0',
+        'total_consumed' => 'numeric|min:0',
 
         // chaves estrangeiras
         'customer_id'    => 'required|int|exists:customer,c_id',
@@ -79,6 +79,27 @@ class Account extends Model
     const VALIDATES_UPDATE = [
         'id'             => 'required|int|exists:account,a_id',
         'customer_id'    => 'exclude', // Cliente não deve ser alterado após a criação da conta
+    ];
+
+    const VALIDATES_MESSAGES =
+    [
+        'table_number.required' => 'O campo Número da Mesa é obrigatório',
+        'table_number.int'      => 'O campo Número da Mesa deve ser um número inteiro',
+        'table_number.min'      => 'O campo Número da Mesa deve ser no mínimo 1',
+
+        'total_consumed.numeric'  => 'O campo Total Consumido deve ser um valor numérico',
+        'total_consumed.min'      => 'O campo Total Consumido deve ser no mínimo 0',
+        'customer_id.required'  => 'O campo ID do Cliente é obrigatório',
+        'customer_id.int'       => 'O campo ID do Cliente deve ser um número inteiro',
+        'customer_id.exists'    => 'O ID do Cliente selecionado não existe na base de dados',
+
+        'status_id.required'    => 'O campo ID do Status é obrigatório',
+        'status_id.int'         => 'O campo ID do Status deve ser um número inteiro',
+        'status_id.exists'      => 'O ID do Status selecionado não existe na base de dados',
+
+        'id.required'           => 'O campo ID é obrigatório',
+        'id.int'                => 'O campo ID deve ser um número inteiro',
+        'id.exists'             => 'O ID selecionado não existe na base de dados da Conta',
     ];
 
     /**
@@ -145,7 +166,7 @@ class Account extends Model
     {
         // Neste caso, a relação correta seria belongsTo, mas mantemos o hasOne
         // para seguir estritamente o padrão 'Lots.php' original.
-        return $this->hasOne(Customers::class, 'c_id', 'a_customer_fk');
+        return $this->hasOne(Customer::class, 'c_id', 'a_customer_fk');
     }
 
     /**

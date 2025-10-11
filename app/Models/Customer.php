@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Modelo Customers
+ * Modelo Customer
  *
  * Gerencia a tabela 'customer'. Segue o padrão de mapeamento de campos (FIELDS_MAP),
  * regras de validação (VALIDATES) e desativação de timestamps personalizados.
  */
-class Customers extends Model
+class Customer extends Model
 {
     // Define a chave primária da tabela 'customer'
     protected $primaryKey = 'c_id';
@@ -60,7 +60,7 @@ class Customers extends Model
     const VALIDATES = [
         // campos de dados
         'name'  => 'required|string|max:255',
-        'code'  => 'required|int',
+        'code'  => 'required|int|min:0001|max:9999',
         'phone' => 'nullable|string|max:50',
     ];
 
@@ -73,6 +73,25 @@ class Customers extends Model
         'id'   => 'required|int|exists:customer,c_id',
         // 'code' é 'exclude' pois geralmente o código é imutável após a criação
         'code' => 'exclude',
+    ];
+
+    const VALIDATES_MESSAGES =
+    [
+        'name.required'    => 'O campo Nome é obrigatório',
+        'name.string'      => 'O campo Nome deve ser um texto (string)',
+        'name.max'         => 'O campo Nome deve ter no máximo 255 caracteres',
+
+        'code.required'    => 'O campo Código é obrigatório',
+        'code.integer'     => 'O campo Código deve ser um número inteiro entre 0001 e 9999',
+        'code.min'         => 'O campo Código deve ser um número inteiro entre 0001 e 9999',
+        'code.max'         => 'O campo Código deve ser um número inteiro entre 0001 e 9999',
+
+        'phone.string'     => 'O campo Telefone deve ser um texto (string)',
+        'phone.max'        => 'O campo Telefone deve ter no máximo 50 caracteres',
+
+        'id.required'      => 'O campo ID é obrigatório',
+        'id.int'           => 'O campo ID deve ser um número inteiro',
+        'id.exists'        => 'O ID selecionado não existe na tabela de clientes',
     ];
 
     /**

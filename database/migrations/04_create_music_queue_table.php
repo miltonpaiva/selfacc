@@ -20,6 +20,7 @@ return new class extends Migration
             // Colunas de Dados
             $table->string('mq_uri');       // string, not null
             $table->string('mq_code');      // string, not null
+            $table->string('mq_str');      // string, not null
             $table->integer('mq_position');  // int, not null
             $table->boolean('mq_is_auction'); // bool, not null
 

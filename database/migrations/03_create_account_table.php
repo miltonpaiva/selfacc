@@ -27,7 +27,7 @@ return new class extends Migration
             $table->integer('a_table_number'); // int, not null
             // 'float' no diagrama é traduzido para 'float' ou 'decimal' no Laravel.
             // Usando 'float' conforme o diagrama, mas 'decimal' é frequentemente mais preciso para moeda.
-            $table->decimal('a_total_consumed', 8, 2); // float, not null
+            $table->decimal('a_total_consumed', 8, 2)->default(0.00); // float, not null
 
             // Timestamps Personalizados (Datas)
             $table->timestamp('a_dt_created')->useCurrent();
