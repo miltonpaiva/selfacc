@@ -31,7 +31,7 @@ class AccountController extends Controller
 
         $customer_queue = MusicQueue::getQueue();
 
-        $queue['queue'] = array_merge($customer_queue, $queue['queue']);
+        $queue['queue'] = array_merge($customer_queue, $queue['queue'] ?? []);
 
         $data =
         [
