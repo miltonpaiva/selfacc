@@ -48,23 +48,33 @@ class MusicQueueController extends Controller
         $music_queue      = (new Music())::getQueue()['queue'];
         $customer_queue   = MusicQueue::getQueue();
         $customer_playing = $customer_queue['playing'];
+        $customer_next    = $customer_queue['next'];
         $customer_queue   = $customer_queue['queue'];
-        $customer_played  = MusicQueue::getPlayed();
 
         if (!isset($music_playing['progress_percent']))
             return self::success('lista de reprodução', ['playing' => [], 'queue' => []]);
 
-        $is_customer_playing = (!empty($customer_playing) && $customer_playing['id'] == $music_playing['item']['id']);
-        $customer_next_queue = current($customer_queue);
+        $customer_next_queue           = current($customer_queue);
+        $is_end_song                   = ($music_playing['progress_percent'] >= 95);
+        $no_has_next_seted             = empty($customer_next);
+        $no_has_playing_seted          = empty($customer_playing);
+        $current_playing_is_a_customer = (!$no_has_playing_seted && $customer_playing['id'] == $music_playing['item']['id']);
+        $next_music_in_queue           = !is_null(searchAll($music_queue, 'id', $customer_next['id'] ?? 0));
+        $next_music_is_playing         = (!$no_has_next_seted && $music_playing['item']['id'] == $customer_next['id'] ?? 0);
 
-        // if($music_playing['progress_percent'] >= 95) {
-        if(true && $customer_next_queue) {
-            if($is_customer_playing) MusicQueue::clearReproducing();
+        // setando que a musica atual da fila será a proxima
+        if (!$is_end_song && $customer_next_queue && $no_has_next_seted)
+            MusicQueue::setNext($customer_next_queue['id']);
 
-            (new Music())::addToQueue($music_playing['device']['id'], $customer_next_queue['uri']);
+        // setando que a musica a seguir entre na fila, se ja não estiver
+        if ($is_end_song && !$no_has_next_seted && !$next_music_in_queue)
+            (new Music())::addToQueue($music_playing['device']['id'], $customer_next['uri']);
 
-            if($customer_next_queue && !$is_customer_playing) MusicQueue::setReproducing($customer_next_queue['id']);
-        }
+        // setando que a musica do cliente esta tocando
+        if ($next_music_is_playing) MusicQueue::setReproducing($customer_next['id']);
+
+        // limpando as musicas reproduzidas
+        if ($is_end_song && $current_playing_is_a_customer) MusicQueue::clearReproducing();
 
         $queue = array_merge($customer_queue, $music_queue);
 

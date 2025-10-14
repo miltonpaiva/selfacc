@@ -136,7 +136,7 @@ class Music
 
         self::saveCache(self::FILE_CACHE_TOKEN, $token_data);
 
-        if (isset($$request_token_data['json']['refresh_token']))
+        if (isset($request_token_data['json']['refresh_token']))
             self::saveCache(self::FILE_CACHE_REFRESH_TOKEN, ['refresh_token' => $request_token_data['json']['refresh_token']]);
 
         return $token_data['access_token'];

@@ -253,9 +253,13 @@ class MusicQueue extends Model
     {
         $playing = self::getPlaing();
 
-        $queue = self::where([
-            ['mq_sv_status_mq_fk', '=', SV::getValueId('status_mq', 'Na Fila')],
-        ])->get()->toArray();
+        $queue = self::whereIn(
+            'mq_sv_status_mq_fk',
+            [
+                SV::getValueId('status_mq', 'Na Fila'),
+                SV::getValueId('status_mq', 'A Seguir')
+            ]
+        )->orderBy('mq_dt_created', 'asc')->get()->toArray();
 
         $queue = array_map(function ($item) {
             $data_arr = explode(';', $item['mq_str']);
@@ -275,14 +279,16 @@ class MusicQueue extends Model
             return $item;
         }, $queue);
 
-        return compact('playing', 'queue');
+        $next = searchAll($queue, 'status_id', SV::getValueId('status_mq', 'A Seguir'), true) ?? [];
+
+        return compact('playing', 'next', 'queue');
     }
 
     public static function getPlaing(): array
     {
         $playing = self::where([
             ['mq_sv_status_mq_fk', '=', SV::getValueId('status_mq', 'Reproduzindo')],
-        ])->get()->first();
+        ])->get()->last();
 
         if(!$playing) return [];
 
@@ -337,12 +343,22 @@ class MusicQueue extends Model
     public static function setReproducing(string $code): void
     {
         self::where([
-            ['mq_code',            '=', $code],
-            ['mq_sv_status_mq_fk', '=', SV::getValueId('status_mq', 'Na Fila')],
+            ['mq_code', '=', $code],
         ])
         ->limit(1)
         ->update(
             ['mq_sv_status_mq_fk' => SV::getValueId('status_mq', 'Reproduzindo')]
+        );
+    }
+
+    public static function setNext(string $code): void
+    {
+        self::where([
+            ['mq_code', '=', $code],
+        ])
+        ->limit(1)
+        ->update(
+            ['mq_sv_status_mq_fk' => SV::getValueId('status_mq', 'A Seguir')]
         );
     }
 
