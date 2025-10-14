@@ -259,13 +259,15 @@ class Music
     }
 
     /**
-     * getPlayngStatus - retorna algumas informações sobre a musica tocando e do dispositivo
+     * getPlayingStatus - retorna algumas informações sobre a musica tocando e do dispositivo
      *
      * @return array
      */
-    public static function getPlayngStatus(): array
+    public static function getPlayingStatus(): array
     {
         $result = self::sendCurl(self::API_ENDPOINTS['set_device'], [], self::getToken());
+
+        if (!isset($result['json']['currently_playing_type'])) return [];
 
         $play_info['currently_playing_type'] = $result['json']['currently_playing_type'];
         $play_info['progress_ms']            = $result['json']['progress_ms'];
@@ -282,6 +284,8 @@ class Music
     public static function getQueue(): array
     {
         $result = self::sendCurl(self::API_ENDPOINTS['queue'], [], self::getToken());
+
+        if (!isset($result['json']['currently_playing'])) return ['playing' => [], 'queue' => []];
 
         $current_playing = self::getTrackItemInfo($result['json']['currently_playing']);
 

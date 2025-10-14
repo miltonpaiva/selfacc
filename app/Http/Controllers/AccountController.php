@@ -18,7 +18,7 @@ class AccountController extends Controller
     {
         $auth_data = self::getAuthData();
         try {
-            $playing = (new Music())::getPlayngStatus();
+            $playing = (new Music())::getPlayingStatus();
         } catch (\Throwable $th) {
             $playing = [];
         }

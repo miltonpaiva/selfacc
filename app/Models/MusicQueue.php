@@ -251,6 +251,8 @@ class MusicQueue extends Model
 
     public static function getQueue(): array
     {
+        $playing = self::getPlaing();
+
         $queue = self::where([
             ['mq_sv_status_mq_fk', '=', SV::getValueId('status_mq', 'Na Fila')],
         ])->get()->toArray();
@@ -259,28 +261,98 @@ class MusicQueue extends Model
             $data_arr = explode(';', $item['mq_str']);
             $item = [
                 'id'           => $item['mq_code'],
+                'queue_id'     => $item['mq_id'],
                 'name'         => $data_arr[0],
                 'duration_min' => $data_arr[2],
                 'uri'          => $item['mq_uri'],
                 'album_name'   => '',
                 'artists'      => $data_arr[1],
                 'customer'     => $item['added_linked_customer_name'],
+                'status'       => $item['added_linked_status_description'],
+                'status_id'    => $item['mq_sv_status_mq_fk'],
             ];
 
             return $item;
         }, $queue);
 
-        return $queue;
+        return compact('playing', 'queue');
+    }
+
+    public static function getPlaing(): array
+    {
+        $playing = self::where([
+            ['mq_sv_status_mq_fk', '=', SV::getValueId('status_mq', 'Reproduzindo')],
+        ])->get()->first();
+
+        if(!$playing) return [];
+
+        $playing = $playing->toArray();
+
+        $data_arr = explode(';', $playing['mq_str']);
+        $playing  =
+        [
+            'id'           => $playing['mq_code'],
+            'queue_id'     => $playing['mq_id'],
+            'name'         => $data_arr[0],
+            'duration_min' => $data_arr[2],
+            'uri'          => $playing['mq_uri'],
+            'album_name'   => '',
+            'artists'      => $data_arr[1],
+            'customer'     => $playing['added_linked_customer_name'],
+            'status'       => $playing['added_linked_status_description'],
+            'status_id'    => $playing['mq_sv_status_mq_fk'],
+        ];
+
+        return $playing;
+    }
+
+    public static function getPlayed(): array
+    {
+        $played = self::where([
+            ['mq_sv_status_mq_fk', '=', SV::getValueId('status_mq', 'Reproduzido')],
+        ])->get()->first();
+
+        if(!$played) return [];
+
+        $played = $played->toArray();
+
+        $data_arr = explode(';', $played['mq_str']);
+        $played  =
+        [
+            'id'           => $played['mq_code'],
+            'queue_id'     => $played['mq_id'],
+            'name'         => $data_arr[0],
+            'duration_min' => $data_arr[2],
+            'uri'          => $played['mq_uri'],
+            'album_name'   => '',
+            'artists'      => $data_arr[1],
+            'customer'     => $played['added_linked_customer_name'],
+            'status'       => $played['added_linked_status_description'],
+            'status_id'    => $played['mq_sv_status_mq_fk'],
+        ];
+
+        return $played;
     }
 
     public static function setReproducing(string $code): void
     {
-        $next = self::where([
+        self::where([
             ['mq_code',            '=', $code],
             ['mq_sv_status_mq_fk', '=', SV::getValueId('status_mq', 'Na Fila')],
-        ])->first();
+        ])
+        ->limit(1)
+        ->update(
+            ['mq_sv_status_mq_fk' => SV::getValueId('status_mq', 'Reproduzindo')]
+        );
+    }
 
-        $next->mq_sv_status_mq_fk = SV::getValueId('status_mq', 'Reproduzindo');
-        $next->save();
+    public static function clearReproducing(): void
+    {
+        self::where(
+            'mq_sv_status_mq_fk',
+            SV::getValueId('status_mq', 'Reproduzindo')
+        )->update(
+            ['mq_sv_status_mq_fk' => SV::getValueId('status_mq', 'Reproduzido')]
+        );
     }
 }

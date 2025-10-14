@@ -22,8 +22,6 @@ function verifyTableNumber() {
 
     document.querySelector('#command_table_number').innerHTML = `Comanda Mesa ${table_number}`
 }
-verifyTableNumber();
-updateOrdersList();
 
 function verifyUserLogged() {
 
@@ -131,9 +129,11 @@ function registerOrder(popup) {
 }
 
 function setPlaying() {
+
+    if (playing_data.length == 0) return;
+
     document.querySelector('#playing_div').innerHTML = getPlayingTemplate(playing_data);
 }
-setPlaying();
 
 function getPlayingTemplate(playing) {
     let user_name = `<span class="playlist__badge playlist__badge--user">👤 ...</span>`;
@@ -181,12 +181,14 @@ function getPlayingTemplate(playing) {
 
 function setQueueList() {
 
+    if (!queue_data || queue_data.length == 0) return;
+
     let queue_list = document.querySelector('#queue_list');
 
     queue_list.innerHTML = '';
 
     let index = 1;
-    Object.values(queue_data.queue).forEach(queue_item => {
+    Object.values(queue_data).forEach(queue_item => {
 
         if (index > 5) return;
 
@@ -200,7 +202,6 @@ function setQueueList() {
         index++;
     });
 }
-setQueueList();
 
 function getQueueItemTemplate(queue, index) {
 
@@ -230,17 +231,6 @@ function getQueueItemTemplate(queue, index) {
         <div class="playlist-item__duration">${queue.duration_min}</div>
     `;
 }
-
-setInterval(function(){
-    sendRequestDefault('/api/music-get-queue', function (response) {
-        if (!response || !response.success) return;
-
-        playing_data = response.data.playing;
-        queue_data   = response.data.queue;
-        setPlaying();
-        setQueueList();
-    });
-}, 5000);
 
 function searchMusicRequest(term) {
 
@@ -333,5 +323,21 @@ function sendRequestDefault(url, callback = false, params = new Object(), is_tex
   });
 }
 
+verifyTableNumber();
 
 if (!verifyUserLogged()) popupFirstAccess();
+
+updateOrdersList();
+setPlaying();
+setQueueList();
+
+setInterval(function(){
+    sendRequestDefault('/api/music-get-queue', function (response) {
+        if (!response || !response.success) return;
+
+        playing_data = response.data.playing;
+        queue_data   = response.data.queue;
+        setPlaying();
+        setQueueList();
+    });
+}, 5000);

@@ -44,23 +44,31 @@ class MusicQueueController extends Controller
 
     public function getQueue(): JsonResponse
     {
-        $playing        = (new Music())::getPlayngStatus();
-        $queue          = (new Music())::getQueue();
-        $customer_queue = MusicQueue::getQueue();
+        $music_playing    = (new Music())::getPlayingStatus();
+        $music_queue      = (new Music())::getQueue()['queue'];
+        $customer_queue   = MusicQueue::getQueue();
+        $customer_playing = $customer_queue['playing'];
+        $customer_queue   = $customer_queue['queue'];
+        $customer_played  = MusicQueue::getPlayed();
 
-        if($playing['progress_percent'] > 96){
-            $next = current($customer_queue);
+        if (!isset($music_playing['progress_percent']))
+            return self::success('lista de reprodução', ['playing' => [], 'queue' => []]);
 
-            if ($next) {
-                (new Music())::addToQueue($playing['device']['id'], $next['uri']);
-                MusicQueue::setReproducing($next['id']);
-            }
+        $is_customer_playing = (!empty($customer_playing) && $customer_playing['id'] == $music_playing['item']['id']);
+        $customer_next_queue = current($customer_queue);
 
+        // if($music_playing['progress_percent'] >= 95) {
+        if(true && $customer_next_queue) {
+            if($is_customer_playing) MusicQueue::clearReproducing();
+
+            (new Music())::addToQueue($music_playing['device']['id'], $customer_next_queue['uri']);
+
+            if($customer_next_queue && !$is_customer_playing) MusicQueue::setReproducing($customer_next_queue['id']);
         }
 
-        $queue['queue'] = array_merge($customer_queue, $queue['queue']);
+        $queue = array_merge($customer_queue, $music_queue);
 
-        return self::success('lista de reprodução', ['playing' => $playing, 'queue' => $queue]);
+        return self::success('lista de reprodução', ['playing' => $music_playing, 'queue' => $queue]);
     }
 
     public function search(Request $request): JsonResponse
