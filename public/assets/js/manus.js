@@ -104,13 +104,16 @@ function popupFirstAccess() {
 function customConfirm(message, title = 'Confirmação') {
     return new Promise((resolve) => {
         const popup     = document.getElementById('customConfirm');
+
+        if (!popup) return resolve(false);
+
         const titleEl   = document.getElementById('confirmTitle');
         const messageEl = document.getElementById('confirmMessage');
         const okBtn     = document.getElementById('confirmOkBtn');
         const cancelBtn = document.getElementById('confirmCancelBtn');
 
-        titleEl.textContent = title;
-        messageEl.textContent = message;
+        if (titleEl)  titleEl.textContent = title;
+        if (messageEl)  messageEl.textContent = message;
 
         popup.classList.add('custom-popup--active');
         document.body.style.overflow = 'hidden';
