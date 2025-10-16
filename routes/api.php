@@ -13,11 +13,11 @@ Route::post('/update-customer', [App\Http\Controllers\CustomerController::class,
 // account
 Route::post('/new-account',    [App\Http\Controllers\AccountController::class, 'createAccount'])->name('account.new');
 Route::post('/update-account', [App\Http\Controllers\AccountController::class, 'upInsertAccount'])->name('account.update');
+Route::get('/logout',         [App\Http\Controllers\AccountController::class, 'logout'])->name('account.logout');
 
 // order
 Route::post('/new-order',    [App\Http\Controllers\OrderController::class, 'upInsertOrder'])->name('order.new');
 Route::post('/update-order', [App\Http\Controllers\OrderController::class, 'upInsertOrder'])->name('order.update');
-
 
 
 // music
