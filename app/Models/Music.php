@@ -126,7 +126,7 @@ class Music
         // verifica se o token esta vencido e se o mesmo foi registrado em cache hoje
         $is_expired         = (($cache_token['expires_at'] ?? 0) < time());
         $cached_today       = (strpos($cache_token['expires_date'] ?? '', date('Y-m-d')) !== false);
-        $request_token_data = self::sendTokenRequest(($is_expired && $cached_today && self::getRefreshToken()));
+        $request_token_data = self::sendTokenRequest(($is_expired && self::getRefreshToken()));
 
         if(!isset($request_token_data['json']['access_token'])) return null;
 
@@ -352,6 +352,9 @@ class Music
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+
         $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
         $server_output = curl_exec($ch);
@@ -394,6 +397,9 @@ class Music
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
         curl_setopt($ch, CURLOPT_URL, $full);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 
         $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 

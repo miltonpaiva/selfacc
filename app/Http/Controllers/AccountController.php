@@ -11,6 +11,8 @@ use App\Models\SimpleValues as SV;
 use App\Models\Search;
 use App\Models\Music;
 use App\Models\MusicQueue;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Redirect;
 
 class AccountController extends Controller
 {
@@ -109,5 +111,12 @@ class AccountController extends Controller
         ];
 
         return view('index_admin', $data);
+    }
+
+    public  static function logout(): RedirectResponse
+    {
+        self::setAuthData('', [], true);
+
+        return Redirect::to('/'); // Redirect to home or login page
     }
 }
