@@ -234,4 +234,10 @@ class Order extends Model
 
         return convertFieldsMapToFormList($orders, new self());
     }
+
+    public static function getByAccountsList(array $accounts_ids): array
+    {
+        $orders = Order::whereIn('o_account_fk', $accounts_ids)->get()->toArray();
+        return convertFieldsMapToFormList($orders, new self());
+    }
 }

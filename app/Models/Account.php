@@ -202,4 +202,70 @@ class Account extends Model
         $status = $this->getLinkedStatus()->first();
         return $status ? $status->sv_title : null;
     }
+
+    public static function updateTotal(int $id): array
+    {
+        $orders = Order::where('o_account_fk', $id)->get();
+
+        if (!$orders) return [];
+
+        $total = $orders->sum('o_total');
+
+        self::find($id)->update(['a_total_consumed' => $total]);
+
+        return convertFieldsMapToForm(self::find($id)->toArray(), new self());
+    }
+
+    public static function getActives(): array
+    {
+        $accounts = self::where('a_sv_status_ac_fk', SV::getValueId('status_ac', 'Aberta'))->get();
+
+        if (!$accounts) return [];
+
+        $accounts     = convertFieldsMapToFormList($accounts->toArray(), new Account());
+        $accounts_ids = array_column($accounts, 'id');
+        $orders       = Order::getByAccountsList($accounts_ids);
+
+        foreach ($orders as $order) {
+            $account_key = searchAll($accounts, 'id', $order['account_id']);
+
+            if(is_null($account_key)) continue;
+
+            $order['customer_name'] = $accounts[$account_key]['customer_name'];
+
+            $accounts[$account_key]['orders'][] = $order;
+        }
+
+        $tables = [];
+        foreach ($accounts as $account) {
+            $table = $tables[$account['table_number']] ?? [];
+
+            if (!isset($table['number']))         $table['number']         = $account['table_number'];
+            if (!isset($table['total']))          $table['total']          = 0.0;
+            if (!isset($table['total_formated'])) $table['total_formated'] = '00,00';
+            if (!isset($table['customers']))      $table['customers']      = [];
+            if (!isset($table['orders']))         $table['orders']         = [];
+
+            $table['customers'][] = [
+                'id'             => $account['customer_id'],
+                'account_id'     => $account['id'],
+                'name'           => $account['customer_name'],
+                'total_consumed' => $account['total_consumed'],
+            ];
+
+            $table['orders'] = array_merge(
+                $table['orders']   ?? [],
+                $account['orders'] ?? []
+            );
+
+            // calculando o total da mesa
+            $table['total'] += $account['total_consumed'];
+
+            $table['total_formated'] = number_format($table['total'], 2, ',', '.');
+
+            $tables[$account['table_number']] = $table;
+        }
+
+        return $tables ?? [];
+    }
 }
