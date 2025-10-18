@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Account;
 use App\Models\Product;
+use App\Models\SimpleValues as SV;
 
 /**
  * Modelo Order
@@ -35,6 +36,7 @@ class Order extends Model
         'o_product_fk',
         'o_quantity',
         'o_observations',
+        'o_sv_status_or_fk',
         'o_total',
     ];
 
@@ -46,6 +48,7 @@ class Order extends Model
     protected $appends = [
         'added_linked_product_name', // Nome do produto associado
         'added_linked_account_table_number', // Número da mesa/conta
+        'added_linked_status_description',
     ];
 
     /**
@@ -69,6 +72,7 @@ class Order extends Model
         // chaves estrangeiras
         'account_id' => 'required|int|exists:account,a_id',
         'product_id' => 'required|int|exists:product,p_id',
+        'status_id'  => 'required|int|exists:simple_values,sv_id',
 
         'observations' => 'max:255',
     ];
@@ -103,6 +107,10 @@ class Order extends Model
         'product_id.int'      => 'O campo ID do Produto deve ser um número inteiro',
         'product_id.exists'   => 'O ID do Produto selecionado não existe na base de dados',
 
+        'status_id.required' => 'O campo ID do Status é obrigatório',
+        'status_id.int'      => 'O campo ID do Status deve ser um número inteiro',
+        'status_id.exists'   => 'O ID do Status selecionado não existe na base de dados',
+
         'observations.string' => 'O campo Observações deve ser um texto (string)',
         'observations.max'    => 'O campo Observações deve ter no máximo 255 caracteres',
 
@@ -121,13 +129,15 @@ class Order extends Model
         'id'                  => 'o_id',
         'account_id'          => 'o_account_fk',
         'product_id'          => 'o_product_fk',
+        'status_id'           => 'o_sv_status_or_fk',
         'quantity'            => 'o_quantity',
         'observations'        => 'o_observations',
         'total'               => 'o_total',
         'date_created'        => 'o_dt_created',
-        'date_updated'        => 'o_dt_updated',
+        'date_created'        => 'o_dt_created',
         'product_name'        => 'added_linked_product_name',
         'table_number'        => 'added_linked_account_table_number',
+        'status_description'  => 'added_linked_status_description',
     ];
 
     /**
@@ -140,6 +150,7 @@ class Order extends Model
         'quantity'            => 'Quantidade',
         'total'               => 'Total do Item',
         'product_name'        => 'Produto',
+        'status_description'  => 'Status do Pedido',
         'table_number'        => 'Número da Mesa/Conta',
         'observations'        => 'Observações',
         'date_created'        => 'Data do Pedido',
@@ -187,6 +198,27 @@ class Order extends Model
         return $this->hasOne(Product::class, 'p_id', 'o_product_fk');
     }
 
+    /**
+     * getLinkedStatus - A conta tem um Status (SimpleValues).
+     *
+     * @return Illuminate\Database\Eloquent\Relations\hasOne
+     */
+    public function getLinkedStatus(): \Illuminate\Database\Eloquent\Relations\hasOne
+    {
+        return $this->hasOne(SV::class, 'sv_id', 'o_sv_status_or_fk');
+    }
+
+    /**
+     * getAddedLinkedStatusDescriptionAttribute - Retorna a descrição do status.
+     *
+     * @return string|null
+     */
+    public function getAddedLinkedStatusDescriptionAttribute(): ?string
+    {
+        $status = $this->getLinkedStatus()->first();
+        return $status ? $status->sv_title : null;
+    }
+
     // --- ACCESSORS ---
 
     /**
@@ -217,17 +249,24 @@ class Order extends Model
     {
         $accounts = Account::where(
             [ ['a_table_number', '=', $table_number], ]
-        )->get()->toArray();
+        )->orderBy('a_dt_updated', 'desc')
+         ->get()
+         ->toArray();
 
         $accounts_ids = array_column($accounts, 'a_id');
-        $orders       = Order::whereIn('o_account_fk', $accounts_ids)->get()->toArray();
+        $orders       = Order::whereIn('o_account_fk', $accounts_ids)
+                        ->orderBy('o_dt_updated', 'desc')
+                        ->get()
+                        ->toArray();
 
         $orders = array_map(function ($order) use ($accounts) {
+            $initial_status_id = SV::getValueId('status_or', 'Novo');
             $account = searchAll($accounts, 'a_id', $order['o_account_fk'], true);
 
             $order['customer_name']       = $account['added_linked_customer_name']      ?? 'não identificado';
             $order['status_account_name'] = $account['added_linked_status_description'] ?? 'não identificado';
             $order['status_account_id']   = $account['a_sv_status_ac_fk']               ?? 'não identificado';
+            $order['is_new']              = ($initial_status_id == $order['o_sv_status_or_fk']);
 
             return $order;
         }, $orders);
@@ -237,7 +276,10 @@ class Order extends Model
 
     public static function getByAccountsList(array $accounts_ids): array
     {
-        $orders = Order::whereIn('o_account_fk', $accounts_ids)->get()->toArray();
+        $orders = Order::whereIn('o_account_fk', $accounts_ids)
+                    ->orderBy('o_dt_updated', 'desc')
+                    ->get()
+                    ->toArray();
         return convertFieldsMapToFormList($orders, new self());
     }
 }

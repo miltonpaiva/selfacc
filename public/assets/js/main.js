@@ -73,6 +73,32 @@ function registerPopupData(popup) {
     console.log('popups_data', popups_data);
 }
 
+function concludeOrderAdmin(order_id) {
+    let url    = '/api/conclude-order'
+    let params = {order_id:order_id};
+
+    let confirm_conclude = confirm('O produto em questão ja foi entregue ao cliente?');
+    if (!confirm_conclude) return;
+
+    sendRequestDefault(url, function (response) {
+        if(!response || !response.success){
+            customAlert(response.message ?? 'Erro desconhecido!', 'Ops não foi possivel concluir o pedido!');
+            return;
+        }
+
+        // Mostrar mensagem de sucesso
+        customAlert(
+            `Pedido concluído com sucesso!`,
+            'Sucesso!'
+        );
+
+        tables_data = response.data.tables;
+        updateTablesList();
+        closeAllPopup();
+
+    }, params);
+}
+
 function registerCustomer(popup) {
 
     let url    = '/api/new-account'
@@ -119,7 +145,7 @@ function registerOrder(popup) {
 
         // Mostrar mensagem de sucesso
         customAlert(
-            `${response.data.product_name} (${response.data.quantity}x) adicionado à comanda da mesa ${response.data.table_number} !${response.data.observations ? '\n\nObservações: ' + response.data.observations : ''}`,
+            `${response.data.new.product_name} (${response.data.new.quantity}x) adicionado à comanda da mesa ${response.data.new.table_number} !${response.data.new.observations ? '\n\nObservações: ' + response.data.new.observations : ''}`,
             'Item Adicionado'
         );
 
@@ -133,6 +159,44 @@ function registerOrder(popup) {
         orders_data = response.data.orders;
 
         updateOrdersList();
+
+    }, params);
+}
+
+function closeTable() {
+    let confirm_close = confirm('Tem certeza que deseja encerrar a comanda?');
+    if (!confirm_close) return;
+
+    let close_table_customer = document.querySelector('#close_table_customer').value;
+
+    if (!close_table_customer) {
+        customAlert('Por favor, informe o cliente que deseja encerrar a comanda!', 'Atenção!');
+        return;
+    }
+
+    let is_account = (close_table_customer != 'all' && close_table_customer != '');
+
+    let url    = '/api/close-table'
+    let params = {};
+
+    if (is_account)  params['account_id'] = close_table_customer;
+    if (!is_account) params['table_number'] = getTablesData()['number'];
+
+    sendRequestDefault(url, function (response) {
+        if(!response || !response.success){
+            customAlert(response.message ?? 'Erro desconhecido!', 'Ops não foi possivel fechar a comanda!');
+            return;
+        }
+
+        // Mostrar mensagem de sucesso
+        customAlert(
+            `Comanda fechada com sucesso!`,
+            'Sucesso!'
+        );
+
+        tables_data = response.data.tables;
+        updateTablesList();
+        closeAllPopup();
 
     }, params);
 }

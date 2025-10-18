@@ -938,6 +938,7 @@ function updateOrdersList() {
                 </div>
                 <div class="order-item__badges">
                     <span class="order-item__badge order-item__badge--drinks">${order.customer_name}</span>
+                    <span class="order-item__badge order-item__badge--bebidas">${order.status_description}</span>
                 </div>
             </div>
             <div class="order-item__price">
@@ -960,7 +961,7 @@ function getTablesData() {
 
     console.log('table_data', table_data);
 
-    return table_data;
+    return table_data[0];
 }
 
 function updateOrdersListAdmin() {
@@ -968,8 +969,22 @@ function updateOrdersListAdmin() {
     const table_command_number = document.getElementById('command_table_number');
 
     let current_table_number = current_popup.popup_trigger_element.getAttribute('table_number');
-    let table_data           = getTablesData() ?? {};
-    let orders_data          = table_data['orders']              ?? [];
+    let table_data           = getTablesData()         ?? {};
+    let orders_data          = table_data['orders']    ?? [];
+    let customers_data       = table_data['customers'] ?? [];
+
+    let close_table_customer = document.getElementById('close_table_customer');
+
+    close_table_customer.innerHTML = `
+        <option value="">Selecione o cliente</option>
+        <option value="all">todos os clientes</option>
+    `;
+
+    for (const customer of customers_data) {
+        close_table_customer.innerHTML += `
+            <option value="${customer.account_id}">${customer.name} (R$ ${customer.total_consumed})</option>
+        `;
+    }
 
     table_command_number.innerHTML = `Mesa ${current_table_number}  | R$ ${table_data['total_formated']}`;
 
@@ -980,6 +995,15 @@ function updateOrdersListAdmin() {
     ordersList.innerHTML = '';
 
     for (const order of orders_data) {
+
+        let conclude_btn = '';
+        if (order.status_description != 'Concluído') {
+            conclude_btn = `
+                <button class="product-popup__add-btn" onclick="concludeOrderAdmin('${order.id}')">
+                    Concluir pedido
+                </button>
+            `;
+        }
 
         const orderItem                = document.createElement('div');
         orderItem.className            = 'order-item';
@@ -993,10 +1017,14 @@ function updateOrdersListAdmin() {
                 </div>
                 <div class="order-item__badges">
                     <span class="order-item__badge order-item__badge--drinks">${order.customer_name}</span>
+                    <span class="order-item__badge order-item__badge--bebidas">${order.status_description}</span>
                 </div>
             </div>
             <div class="order-item__price">
                 <span class="order-item__total-price only_waiter">R$ ${parseFloat(order.total).toFixed(2).replace('.', ',')}</span>
+
+                ${conclude_btn}
+
             </div>
         `;
 
@@ -1027,8 +1055,6 @@ function updateTablesList() {
 
         container.appendChild(article);
     });
-
-
 
     initPopupTrigger('ordersPopupAdmin',   'table_command', updateOrdersListAdmin);
     initPopupTrigger('newOrderPopupAdmin', 'table_new_order', updateProductPopup);
@@ -1084,6 +1110,7 @@ function getTablesTemplate(table) {
 
     return `
         <div class="menu-item__content">
+            <span class="header__orders-badge-admin">${table['new_order_qtd']}</span>
             <div class="menu-item__header">
                 <h4 class="menu-item__name">Mesa: ${table['number']}</h4>
                 <span class="menu-item__price">R$ ${table['total_formated']}</span>

@@ -125,4 +125,18 @@ class AccountController extends Controller
         $tables = Account::getActives();
         return self::success("Tabelas ativas", ['tables' => $tables]);
     }
+
+    public function closeTable(Request $request): object
+    {
+        $table_number = $request->get('table_number');
+        $account_id   = $request->get('account_id');
+
+        $is_table = ($table_number && is_numeric($table_number));
+
+        if ($is_table && !$table_number) return self::error('Número da mesa não informado.');
+        if (!$is_table && !$account_id) return self::error('ID do cliente não informado.');
+
+        if ($is_table)  return Account::closeTableByNumber($table_number);
+        if (!$is_table) return Account::closeAccount($account_id);
+    }
 }

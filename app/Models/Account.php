@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Customer;
 use App\Models\SimpleValues as SV; // Usando o alias SV
+use Illuminate\Http\JsonResponse;
 
 /**
  * Modelo Account
@@ -230,14 +231,23 @@ class Account extends Model
         $accounts_ids = array_column($accounts, 'id');
         $orders       = Order::getByAccountsList($accounts_ids);
 
+        $new_qtd = [];
         foreach ($orders as $order) {
             $account_key = searchAll($accounts, 'id', $order['account_id']);
 
             if(is_null($account_key)) continue;
 
+            $order['is_new']        = ($order['status_id'] == SV::getValueId('status_or', 'Novo'));
             $order['customer_name'] = $accounts[$account_key]['customer_name'];
 
             $accounts[$account_key]['orders'][] = $order;
+
+            if ($order['is_new']){
+                if (!isset($new_qtd[$order['table_number']]))
+                    $new_qtd[$order['table_number']] = 0;
+
+                $new_qtd[$order['table_number']]++;
+            }
         }
 
         $tables = [];
@@ -250,6 +260,7 @@ class Account extends Model
             if (!isset($table['total_formated'])) $table['total_formated'] = '00,00';
             if (!isset($table['customers']))      $table['customers']      = [];
             if (!isset($table['orders']))         $table['orders']         = [];
+            if (!isset($table['new_order_qtd']))  $table['new_order_qtd']  = $new_qtd[$account['table_number']] ?? 0;
             if (!isset($table['updated_date']))   $table['updated_date']   = $account['date_updated'];
             if (!isset($table['updated_time']))   $table['updated_time']   = strtotime($account['date_updated']);
 
@@ -276,5 +287,39 @@ class Account extends Model
         $tables = ordenateAll($tables, 'updated_time', false);
 
         return array_values($tables) ?? [];
+    }
+
+    public static function closeTableByNumber(int $table_number): object
+    {
+        $accounts = Account::where(
+            [ ['a_table_number', '=', $table_number], ]
+        )->get();
+
+        if (!$accounts) return \App\Traits\DefaultResponseTrait::error('Nenhuma conta encontrada para o número da mesa informado.');
+
+        $closed_status_id = SV::getValueId('status_ac', 'Fechada');
+
+        foreach ($accounts as $account) {
+            $account->a_sv_status_ac_fk = $closed_status_id;
+            $account->save();
+        }
+
+        $tables = Account::getActives();
+        return \App\Traits\DefaultResponseTrait::success('Mesa fechada com sucesso.', ['tables' => $tables]);
+    }
+
+    public static function closeAccount(int $account_id): JsonResponse
+    {
+        $account = Account::find($account_id);
+
+        if (!$account) return \App\Traits\DefaultResponseTrait::error('Conta não encontrada para o ID informado.');
+
+        $closed_status_id = SV::getValueId('status_ac', 'Fechada');
+
+        $account->a_sv_status_ac_fk = $closed_status_id;
+        $account->save();
+
+        $tables = Account::getActives();
+        return \App\Traits\DefaultResponseTrait::success('Conta fechada com sucesso.', ['tables' => $tables]);
     }
 }

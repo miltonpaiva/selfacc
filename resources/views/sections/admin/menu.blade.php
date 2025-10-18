@@ -159,6 +159,16 @@
             </div>
         </div>
 
+        <div class="product-popup__footer">
+            <select class="custom-popup__input" id="close_table_customer">
+                <option value="">Selecione o cliente</option>
+                <option value="all">todos os clientes</option>
+            </select>
+            <button class="product-popup__add-btn" onclick="closeTable()">
+                Fechar a comanda
+            </button>
+        </div>
+
 
     </div>
 </div>

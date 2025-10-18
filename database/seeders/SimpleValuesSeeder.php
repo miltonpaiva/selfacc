@@ -43,6 +43,8 @@ class SimpleValuesSeeder extends Seeder
         ['sv_title' => 'Guarnições',           'sv_group' => 'category_pd'],
         ['sv_title' => 'Outros',               'sv_group' => 'category_pd'],
 
+        ['sv_title' => 'Novo',      'sv_group' => 'status_or'],
+        ['sv_title' => 'Concluído', 'sv_group' => 'status_or'],
     ];
 
     /**

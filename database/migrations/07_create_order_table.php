@@ -23,6 +23,8 @@ return new class extends Migration
             // Referencia a tabela 'product' (chave 'p_id')
             $table->unsignedBigInteger('o_product_fk');
 
+            $table->unsignedBigInteger('o_sv_status_or_fk');
+
             // Colunas de Dados
             $table->unsignedInteger('o_quantity'); // int, not null (assumindo que quantidade é sempre positiva)
             $table->string('o_observations')->nullable();
@@ -37,6 +39,7 @@ return new class extends Migration
             // Se a conta ou o produto forem deletados, os itens do pedido associado devem ser tratados (cascade/set null).
             $table->foreign('o_account_fk')->references('a_id')->on('account')->onDelete('cascade');
             $table->foreign('o_product_fk')->references('p_id')->on('product')->onDelete('restrict');
+            $table->foreign('o_sv_status_or_fk')->references('sv_id')->on('simple_values')->onDelete('restrict');
         });
     }
 
