@@ -1,4 +1,16 @@
 const overlay = document.querySelector('.custom-popup__overlay');
+// informações do atual popup
+var current_popup = {};
+clearCurrentPopup();
+
+function clearCurrentPopup() {
+    current_popup =
+    {
+        'popup':                 null,
+        'popup_class':           null,
+        'popup_trigger_element': null,
+    }
+}
 
 // verifica as teclas digitadas
 function handleKeydown(e) {
@@ -21,6 +33,24 @@ function closePopup(popup) {
 
     let has_active_popups = (document.querySelectorAll('.custom-popup--active').length > 0);
     if (!has_active_popups) overlay.style.display='none';
+}
+
+function openAllPopup() {
+
+    let class_str = current_popup.popup_class;
+    let popup     = current_popup.popup;
+
+    popup.classList.add(class_str);
+    document.body.style.overflow = 'hidden'; // Prevenir scroll do body
+}
+
+function closeAllPopup() {
+
+    let class_str = current_popup.popup_class;
+    let popup     = current_popup.popup;
+
+    popup.classList.remove(class_str);
+    document.body.style.overflow = ''; // Restaurar scroll do body
 }
 
 // adiciona gatilhos para fechar o popup
@@ -82,6 +112,8 @@ function customAlert(message, title = 'Sucesso!') {
 
 function popupFirstAccess() {
     let popup = document.querySelector('#popup_first_access');
+
+    if (!popup) return;
 
     // const titleEl   = popup.querySelector('#alertTitle');
     // const messageEl = popup.querySelector('#alertMessage');
@@ -213,17 +245,17 @@ function customPrompt(message, title = 'Digite o valor', defaultValue = '') {
 // ========================================
 // MAIN SCRIPT
 // ========================================
-
+// menu mobile
 document.addEventListener('DOMContentLoaded', function() {
     const menuToggle = document.querySelector('.header__menu-toggle');
     const nav = document.querySelector('.nav');
     const navLinks = document.querySelectorAll('.nav__link');
-    
+
     // Toggle menu
     if (menuToggle) {
         menuToggle.addEventListener('click', function() {
             nav.classList.toggle('nav--active');
-            
+
             // Animação do ícone hamburger
             const icons = menuToggle.querySelectorAll('.header__menu-icon');
             if (nav.classList.contains('nav--active')) {
@@ -318,7 +350,6 @@ document.addEventListener('DOMContentLoaded', function() {
         lastScroll = currentScroll;
     });
 });
-
 
 // ========================================
 // MAIN SCRIPT
@@ -426,9 +457,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchResults = document.getElementById('searchResults');
     const menuItems = document.querySelectorAll('.menu-item');
     const filterButtons = document.querySelectorAll('.menu__filter');
-    
+
     let currentFilter = 'todos';
-    
+
     // Função para normalizar texto (remover acentos)
     function normalizeText(text) {
         return text
@@ -436,28 +467,28 @@ document.addEventListener('DOMContentLoaded', function() {
             .normalize('NFD')
             .replace(/[\u0300-\u036f]/g, '');
     }
-    
+
     // Função para buscar produtos
     function searchProducts(searchTerm) {
         const normalizedSearch = normalizeText(searchTerm);
         let visibleCount = 0;
         let totalInCategory = 0;
-        
+
         menuItems.forEach((item, index) => {
             const itemCategory = item.getAttribute('data-category');
             const itemName = item.querySelector('.menu-item__name').textContent;
             const normalizedName = normalizeText(itemName);
-            
+
             // Verificar se o item pertence à categoria ativa
             const matchesCategory = currentFilter === 'todos' || itemCategory === currentFilter;
-            
+
             // Verificar se o nome contém o termo de busca
             const matchesSearch = normalizedName.includes(normalizedSearch);
-            
+
             if (matchesCategory) {
                 totalInCategory++;
             }
-            
+
             if (matchesCategory && matchesSearch) {
                 // Mostrar item
                 item.classList.remove('menu-item--hidden');
@@ -579,14 +610,44 @@ document.addEventListener('DOMContentLoaded', function() {
 // MAIN SCRIPT
 // ========================================
 
+function initPopupTrigger(popup_id, itens_trigger_class, callback = false) {
+    const popup = document.getElementById(popup_id);
+
+    if (!popup) return;
+
+    const popup_close_btn = popup.querySelector('.popup_close');
+    const popup_class     = 'custom-popup--active';
+
+    let itens_trigger = document.querySelectorAll(`.${itens_trigger_class}`);
+    for (const item of itens_trigger) {
+        item.addEventListener('click', function() {
+
+            current_popup.popup                 = popup;
+            current_popup.popup_class           = popup_class;
+            current_popup.popup_trigger_element = item;
+
+            if (callback) callback();
+
+            openAllPopup();
+        });
+    }
+
+    // Fechar popup - botão X
+    if (popup_close_btn) {
+        popup_close_btn.addEventListener('click', function() {
+            closeAllPopup();
+        });
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    const ordersBtn = document.getElementById('ordersBtn');
-    const ordersPopup = document.getElementById('ordersPopup');
-    const ordersOverlay = document.getElementById('ordersOverlay');
-    const closeOrdersPopup = document.getElementById('closeOrdersPopup');
-    const ordersBadge = document.getElementById('ordersBadge');
-    const ordersList = document.getElementById('ordersList');
-    const ordersTotal = document.getElementById('ordersTotal');
+    const ordersBtn             = document.getElementById('ordersBtn');
+    const ordersPopup           = document.getElementById('ordersPopup');
+    const closeOrdersPopup      = document.getElementById('closeOrdersPopup');
+    const ordersOverlay         = document.getElementById('ordersOverlay');
+    const ordersBadge           = document.getElementById('ordersBadge');
+    const ordersList            = document.getElementById('ordersList');
+    const ordersTotal           = document.getElementById('ordersTotal');
 
     // Abrir popup
     if (ordersBtn) {
@@ -625,7 +686,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Atualizar contador de itens no badge
     function updateOrdersBadge() {
 
-        if (!ordersList) return;
+        if (!ordersList || !ordersBadge) return;
 
         const items = ordersList.querySelectorAll('.order-item');
         let totalItems = 0;
@@ -645,34 +706,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Inicializar contadores
     updateOrdersBadge();
 });
-
-// ========================================
-// POPUP DE BUSCA DE MÚSICAS
-// ========================================
-
-// Base de dados de músicas (exemplo)
-const musicDatabase = [
-    { id: 1, song: 'Evidências', artist: 'Chitãozinho & Xororó', duration: '5:00', genre: 'Sertanejo' },
-    { id: 2, song: 'Aquarela do Brasil', artist: 'Gal Costa', duration: '3:45', genre: 'MPB' },
-    { id: 3, song: 'Mas Que Nada', artist: 'Jorge Ben Jor', duration: '2:50', genre: 'Samba' },
-    { id: 4, song: 'Garota de Ipanema', artist: 'Tom Jobim', duration: '5:20', genre: 'Bossa Nova' },
-    { id: 5, song: 'Tempo Perdido', artist: 'Legião Urbana', duration: '4:35', genre: 'Rock' },
-    { id: 6, song: 'Chega de Saudade', artist: 'João Gilberto', duration: '3:15', genre: 'Bossa Nova' },
-    { id: 7, song: 'Asa Branca', artist: 'Luiz Gonzaga', duration: '3:50', genre: 'Forró' },
-    { id: 8, song: 'Construção', artist: 'Chico Buarque', duration: '6:15', genre: 'MPB' },
-    { id: 9, song: 'Sozinho', artist: 'Caetano Veloso', duration: '4:20', genre: 'MPB' },
-    { id: 10, song: 'Aquele Abraço', artist: 'Gilberto Gil', duration: '3:30', genre: 'MPB' },
-    { id: 11, song: 'Faroeste Caboclo', artist: 'Legião Urbana', duration: '9:05', genre: 'Rock' },
-    { id: 12, song: 'Fico Assim Sem Você', artist: 'Adriana Calcanhotto', duration: '3:40', genre: 'Pop' },
-    { id: 13, song: 'Exagerado', artist: 'Cazuza', duration: '4:25', genre: 'Rock' },
-    { id: 14, song: 'Ainda é Cedo', artist: 'Legião Urbana', duration: '3:50', genre: 'Rock' },
-    { id: 15, song: 'Roda Viva', artist: 'Chico Buarque', duration: '3:15', genre: 'MPB' },
-    { id: 16, song: 'Alegria, Alegria', artist: 'Caetano Veloso', duration: '2:50', genre: 'Tropicália' },
-    { id: 17, song: 'Apesar de Você', artist: 'Chico Buarque', duration: '3:45', genre: 'MPB' },
-    { id: 18, song: 'Cálice', artist: 'Chico Buarque', duration: '5:10', genre: 'MPB' },
-    { id: 19, song: 'Trem das Onze', artist: 'Adoniran Barbosa', duration: '2:45', genre: 'Samba' },
-    { id: 20, song: 'Samba de Uma Nota Só', artist: 'Tom Jobim', duration: '2:30', genre: 'Bossa Nova' }
-];
 
 // ========================================
 // MAIN SCRIPT
@@ -882,9 +915,11 @@ function closeProductPopup(productPopup) {
 function updateOrdersList() {
     const ordersList = document.getElementById('ordersList');
 
-    if (!orders_data || orders_data.length == 0) return;
+    if (typeof orders_data == 'undefined' || !orders_data || orders_data.length == 0) return;
 
-    if (document.querySelector('#ordersBadge')) 
+    if (!ordersList) return;
+
+    if (document.querySelector('#ordersBadge'))
         document.querySelector('#ordersBadge').innerHTML = orders_data.length
 
     ordersList.innerHTML = '';
@@ -898,11 +933,11 @@ function updateOrdersList() {
                 <h4 class="order-item__name">${order.product_name}</h4>
             </div>
             <div class="order-item__details">
+                <div class="order-item__quantity">
+                    <span class="order-item__qty-value">(X${order.quantity})</span>
+                </div>
                 <div class="order-item__badges">
                     <span class="order-item__badge order-item__badge--drinks">${order.customer_name}</span>
-                </div>
-                <div class="order-item__quantity">
-                    <span class="order-item__qty-value">${order.quantity}</span>
                 </div>
             </div>
             <div class="order-item__price">
@@ -914,6 +949,266 @@ function updateOrdersList() {
     }
 }
 
+function updateOrdersListAdmin() {
+    const ordersList           = document.getElementById('ordersListAdmin');
+    const table_command_number = document.getElementById('command_table_number');
+
+    let current_table_number = current_popup.popup_trigger_element.getAttribute('table_number');
+    let table_data           = tables_data[current_table_number] ?? {};
+    let orders_data          = table_data['orders']              ?? [];
+
+    table_command_number.innerHTML = `Mesa ${current_table_number}  | R$ ${table_data['total_formated']}`;
+
+    console.log('orders_data', orders_data);
+
+    if (typeof orders_data == 'undefined' || !orders_data || orders_data.length == 0) return;
+
+    ordersList.innerHTML = '';
+
+    for (const order of orders_data) {
+
+        const orderItem                = document.createElement('div');
+        orderItem.className            = 'order-item';
+        orderItem.innerHTML = `
+            <div class="order-item__header">
+                <h4 class="order-item__name">${order.product_name}</h4>
+            </div>
+            <div class="order-item__details">
+                <div class="order-item__quantity">
+                    <span class="order-item__qty-value">(X${order.quantity})</span>
+                </div>
+                <div class="order-item__badges">
+                    <span class="order-item__badge order-item__badge--drinks">${order.customer_name}</span>
+                </div>
+            </div>
+            <div class="order-item__price">
+                <span class="order-item__total-price only_waiter">R$ ${parseFloat(order.total).toFixed(2).replace('.', ',')}</span>
+            </div>
+        `;
+
+        ordersList.appendChild(orderItem);
+    }
+}
+
+function updateTablesList() {
+    let container = document.getElementById('tables_content');
+
+    if (!container) return;
+
+    if (typeof tables_data == 'undefined' || !tables_data || tables_data.length == 0) {
+        container.innerHTML = '<p class="no-tables">Nenhuma mesa encontrada.</p>';
+        return;
+    }
+
+    container.innerHTML = `
+        <article class="menu-item" >
+            <div class="menu-item__content">
+                <select class="custom-popup__input" id="new_table_number">
+                    <option value="">numero da sua mesa</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                    <option value="20">20</option>
+                    <option value="20">20</option>
+                    <option value="21">21</option>
+                    <option value="22">22</option>
+                    <option value="23">23</option>
+                    <option value="24">24</option>
+                    <option value="26">26</option>
+                    <option value="27">27</option>
+                    <option value="28">28</option>
+                    <option value="29">29</option>
+                    <option value="30">30</option>
+                </select>
+                <input type="text" class="custom-popup__input" id="name" placeholder="Seu nome">
+                <button class="product-popup__add-btn" onclick="createNewTable()">
+                    Criar comanda
+                </button>
+            </div>
+        </article>
+    `;
+
+    Object.values(tables_data).forEach(table => {
+        container.innerHTML += getTablesTemplate(table);
+    });
+
+    initPopupTrigger('ordersPopupAdmin',   'table_command', updateOrdersListAdmin);
+    initPopupTrigger('newOrderPopupAdmin', 'table_new_order', updateProductPopup);
+}
+
+function createNewTable() {
+    let select_table_number = document.getElementById('new_table_number');
+    let table_number        = select_table_number.value;
+    let name_input          = document.getElementById('name');
+
+    if (!table_number) {
+        alert('Selecione o número da mesa');
+        return;
+    }
+
+    if (!name_input.value) {
+        alert('Informe o nome do cliente');
+        return;
+    }
+
+    let url    = '/api/new-account'
+    let params = {
+        name:         name_input.value,
+        code:         1234,
+        table_number: table_number,
+        is_admin:     true,
+    };
+
+    sendRequestDefault(url, function (response) {
+
+        console.log('response', response);
+
+        if(!response || !response.success){
+            customAlert(response.message ?? 'Erro desconhecido!', 'Ops não foi possivel registrar a mesa!');
+            return;
+        }
+
+        tables_data = response.data.tables;
+
+        updateTablesList(table_number);
+
+        customAlert('Mesa criada/atualizada com sucesso!', 'Sucesso!')
+
+    }, params);
+
+}
+
+function getTablesTemplate(table) {
+
+    let customers_name = '';
+    for (const customer of table.customers)
+        customers_name += `<span class="menu-item__badge menu-item__badge--drinks">${customer.name} (R$ ${customer.total_consumed})</span>`;
+
+    return `
+        <article class="menu-item" data-category="" >
+            <div class="menu-item__content">
+                <div class="menu-item__header">
+                    <h4 class="menu-item__name">Mesa: ${table['number']}</h4>
+                    <span class="menu-item__price">R$ ${table['total_formated']}</span>
+                </div>
+                ${customers_name}
+
+                <div class="product-popup__quantity-controls">
+                    <button class="product-popup__qty-btn table_command" table_number="${table['number']}" >
+                        <svg class="header__orders-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V5C21 3.89543 20.1046 3 19 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M7 7H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                            <path d="M7 12H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                            <path d="M7 17H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                        </svg>
+                    </button>
+
+                    <button class="product-popup__qty-btn table_new_order" table_number="${table['number']}">
+                        +
+                    </button>
+                </div>
+
+            </div>
+        </article>
+    `;
+}
+
+function updateProductPopup(table_number = null) {
+    let current_table_number = table_number ?? current_popup.popup_trigger_element.getAttribute('table_number');
+    let table_data           = tables_data[current_table_number] ?? {};
+    let popup                = current_popup.popup;
+    let order_title          = popup.querySelector('#new_order_title');
+    let select_account       = popup.querySelector('#account_id');
+    let btn_plus             = popup.querySelector('#productQtyPlus');
+    let btn_minus            = popup.querySelector('#productQtyMinus');
+
+    popup.querySelector('#product_id').value      = '';
+    popup.querySelector('#quantity').value        = 1;
+    popup.querySelector('#observations').value    = '';
+    popup.querySelector('#order_total').innerHTML = 'R$ 0,00';
+
+    order_title.innerHTML     = `Adicionar pedido Mesa ${table_data.number}`;
+    select_account.innerHTML = '<option value="">Selecione o cliente</option>';
+
+    for (const customer of table_data.customers)
+        select_account.innerHTML += `<option value="${customer.account_id}">${customer.name}</option>`
+
+    if (!btn_plus.classList.contains('triggered'))
+        btn_plus.addEventListener('click', function() {
+        updateQuantityAndTotal(true);
+    });
+
+    if (!btn_minus.classList.contains('triggered'))
+        btn_minus.addEventListener('click', function() {
+        updateQuantityAndTotal(false);
+    });
+
+    btn_minus.classList.add('triggered');
+    btn_plus.classList.add('triggered');
+}
+
+function updateQuantityAndTotal(is_plus) {
+
+    let popup          = current_popup.popup;
+    let input_quantity = popup.querySelector('#quantity');
+
+    value = parseInt(input_quantity.value);
+
+    console.log('value', value);
+
+    let new_quantity     = is_plus? (value+1) : (value-1);
+
+    console.log('new_quantity', new_quantity);
+
+    let is_invalid_plus  = (new_quantity == 100);
+    let is_invalid_minus = (new_quantity == 0);
+
+    if (is_invalid_plus || is_invalid_minus) return;
+
+    if(!calculateAndSetTotal(new_quantity)) return;
+
+    input_quantity.value = new_quantity;
+}
+
+function calculateAndSetTotal(new_quantity) {
+    let popup             = current_popup.popup;
+    let total_text        = popup.querySelector('#order_total');
+    let total_input       = popup.querySelector('#total');
+    let select_product_id = popup.querySelector('#product_id');
+
+    let product = products_data.find(produc => produc.id == select_product_id.value);
+
+    if (!product){
+        alert('produto não selecionado');
+        return false;
+    }
+
+    let total = parseFloat(product.price) * new_quantity;
+
+    setTotalText(total_text, total);
+    total_input.value = total;
+
+    return total;
+}
+
+function setTotalText(element, total) {
+    element.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     const productPopup        = document.getElementById('productPopup');
@@ -935,6 +1230,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const productTotalInput   = productPopup.querySelector('#total');
     const productIdInput      = productPopup.querySelector('#product_id');
     const productAddBtn       = document.getElementById('productAddBtn');
+    const productAddBtnAdmin  = document.getElementById('productAddBtnAdmin');
 
     let currentProduct = null;
 
@@ -1043,7 +1339,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Adicionar à comanda
-    productAddBtn.addEventListener('click', async function() {
+    if (productAddBtn) productAddBtn.addEventListener('click', async function() {
 
         registerPopupData(productPopup);
 
@@ -1490,28 +1786,11 @@ async function showNotificationBanner() {
 
 // Exemplo de uso nas funções existentes:
 
-var exist_add_orders = (typeof addToOrders !== 'undefined');
-// Quando adicionar item à comanda (modificar função existente)
-const originalAddToOrders = null;
-if (exist_add_orders) {
-    addToOrders = function(product, quantity, observations) {
-        // Chamar função original
-        originalAddToOrders(product, quantity, observations);
-
-        // Enviar notificação (opcional)
-        if (PushNotifications.isEnabled()) {
-            // Notificação silenciosa de item adicionado
-            // PushNotifications.notifyCustom(
-            //     '✅ Item Adicionado',
-            //     `${product.name} (${quantity}x) foi adicionado à comanda.`,
-            //     { silent: true, tag: 'item-added' }
-            // );
-        }
-    };
-}
-
 // Expor objeto global para uso em outros scripts
 window.PushNotifications = PushNotifications;
 
 console.log('✅ Sistema de Push Notifications carregado');
 
+document.addEventListener('DOMContentLoaded', function() {
+    updateTablesList();
+});

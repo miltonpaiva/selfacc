@@ -25,7 +25,7 @@ function verifyTableNumber() {
 
 function verifyUserLogged() {
 
-    if (user_logged && auth_data) return true;
+    if (typeof user_logged !== 'undefined' && user_logged && auth_data) return true;
 
     if (getUserData()) return true;
 
@@ -34,7 +34,7 @@ function verifyUserLogged() {
 
 function getUserData(force_update = false) {
 
-    if (auth_data && !force_update) return auth_data;
+    if (typeof auth_data !== 'undefined' && auth_data && !force_update) return auth_data;
 
     let auth_coockie = getCookie('auth_data');
 
@@ -102,7 +102,8 @@ function registerCustomer(popup) {
 function registerOrder(popup) {
     let url    = '/api/new-order'
     let params = popups_data[popup.id];
-    params['account_id'] = auth_data.account.id;
+
+    if (!params['account_id']) params['account_id'] = auth_data.account.id ?? null;
 
     sendRequestDefault(url, function (response) {
 
@@ -122,7 +123,15 @@ function registerOrder(popup) {
             'Item Adicionado'
         );
 
+        if (response.data.tables) {
+            tables_data = response.data.tables;
+            updateTablesList();
+            closeAllPopup();
+            return;
+        }
+
         orders_data = response.data.orders;
+
         updateOrdersList();
 
     }, params);
@@ -130,7 +139,7 @@ function registerOrder(popup) {
 
 function setPlaying() {
 
-    if (playing_data.length == 0) return;
+    if (typeof playing_data == 'undefined' || !playing_data || playing_data.length == 0) return;
 
     document.querySelector('#playing_div').innerHTML = getPlayingTemplate(playing_data);
 }
@@ -181,7 +190,7 @@ function getPlayingTemplate(playing) {
 
 function setQueueList() {
 
-    if (!queue_data || queue_data.length == 0) return;
+    if (typeof queue_data == 'undefined' || !queue_data || queue_data.length == 0) return;
 
     let queue_list = document.querySelector('#queue_list');
 
@@ -289,6 +298,11 @@ function returnPopupData(popup) {
     return popup_data;
 }
 
+function registerAdminOrder() {
+    registerPopupData(current_popup.popup);
+    registerOrder(current_popup.popup);
+}
+
 //
 // envia a requisição para a url informada, passando os parametros informados e
 // chama o callack ao fim se houver
@@ -331,7 +345,7 @@ updateOrdersList();
 setPlaying();
 setQueueList();
 
-setInterval(function(){
+if (verifyUserLogged()) setInterval(function(){
     sendRequestDefault('/api/music-get-queue', function (response) {
         if (!response || !response.success) return;
 
