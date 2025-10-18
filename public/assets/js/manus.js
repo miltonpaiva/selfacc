@@ -1038,7 +1038,6 @@ function updateTablesList() {
     if (!container) return;
 
     if (typeof tables_data == 'undefined' || !tables_data || tables_data.length == 0) {
-        container.innerHTML = '<p class="no-tables">Nenhuma mesa encontrada.</p>';
         return;
     }
 
