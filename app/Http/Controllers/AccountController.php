@@ -11,6 +11,7 @@ use App\Models\SimpleValues as SV;
 use App\Models\Search;
 use App\Models\Music;
 use App\Models\MusicQueue;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 
@@ -117,5 +118,11 @@ class AccountController extends Controller
         self::setAuthData('', [], true);
 
         return Redirect::to('/'); // Redirect to home or login page
+    }
+
+    public function getTables(Request $request): JsonResponse
+    {
+        $tables = Account::getActives();
+        return self::success("Tabelas ativas", ['tables' => $tables]);
     }
 }

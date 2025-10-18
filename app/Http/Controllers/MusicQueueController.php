@@ -54,17 +54,27 @@ class MusicQueueController extends Controller
         if (!isset($music_playing['progress_percent']))
             return self::success('lista de reprodução', ['playing' => [], 'queue' => []]);
 
-        $customer_next_queue           = current($customer_queue);
         $is_end_song                   = ($music_playing['progress_percent'] >= 95);
         $no_has_next_seted             = empty($customer_next);
         $no_has_playing_seted          = empty($customer_playing);
         $current_playing_is_a_customer = (!$no_has_playing_seted && $customer_playing['id'] == $music_playing['item']['id']);
         $next_music_in_queue           = !is_null(searchAll($music_queue, 'id', $customer_next['id'] ?? 0));
-        $next_music_is_playing         = (!$no_has_next_seted && $music_playing['item']['id'] == $customer_next['id'] ?? 0);
+        $next_music_is_playing         = (!empty($customer_queue) && $music_playing['item']['id'] == current($customer_queue)['id'] ?? 0);
+
+        // echo '<h1>$is_end_song</h1><pre>';
+        // print_r($is_end_song);
+        // echo '<h1>$no_has_next_seted</h1><pre>';
+        // print_r($no_has_next_seted);
+        // echo '<h1>$next_music_is_playing</h1><pre>';
+        // print_r($next_music_is_playing);
+        // echo '<h1>$customer_next</h1><pre>';
+        // print_r($customer_next);
+        // echo '<h1>$customer_queue</h1><pre>';
+        // print_r($customer_queue);
 
         // setando que a musica atual da fila será a proxima
-        if (!$is_end_song && $customer_next_queue && $no_has_next_seted)
-            MusicQueue::setNext($customer_next_queue['id']);
+        if (!$is_end_song && $no_has_next_seted && !empty($customer_queue))
+            MusicQueue::setNext(current($customer_queue)['id']);
 
         // setando que a musica a seguir entre na fila, se ja não estiver
         if ($is_end_song && !$no_has_next_seted && !$next_music_in_queue)

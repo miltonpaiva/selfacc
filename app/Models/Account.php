@@ -218,7 +218,11 @@ class Account extends Model
 
     public static function getActives(): array
     {
-        $accounts = self::where('a_sv_status_ac_fk', SV::getValueId('status_ac', 'Aberta'))->get();
+        $accounts = self::where(
+                        'a_sv_status_ac_fk',
+                        SV::getValueId('status_ac', 'Aberta')
+                    )->orderBy('a_dt_updated', 'desc')
+                     ->get();
 
         if (!$accounts) return [];
 
@@ -238,6 +242,7 @@ class Account extends Model
 
         $tables = [];
         foreach ($accounts as $account) {
+
             $table = $tables[$account['table_number']] ?? [];
 
             if (!isset($table['number']))         $table['number']         = $account['table_number'];
@@ -245,6 +250,8 @@ class Account extends Model
             if (!isset($table['total_formated'])) $table['total_formated'] = '00,00';
             if (!isset($table['customers']))      $table['customers']      = [];
             if (!isset($table['orders']))         $table['orders']         = [];
+            if (!isset($table['updated_date']))   $table['updated_date']   = $account['date_updated'];
+            if (!isset($table['updated_time']))   $table['updated_time']   = strtotime($account['date_updated']);
 
             $table['customers'][] = [
                 'id'             => $account['customer_id'],
@@ -266,6 +273,8 @@ class Account extends Model
             $tables[$account['table_number']] = $table;
         }
 
-        return $tables ?? [];
+        $tables = ordenateAll($tables, 'updated_time', false);
+
+        return array_values($tables) ?? [];
     }
 }

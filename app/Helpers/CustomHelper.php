@@ -212,3 +212,45 @@ use Illuminate\Database\Eloquent\Model;
         }
     }
 
+    if (!function_exists('ordenateAll')){
+        /**
+         * orderna array multidimensional ou array de objetos pela coluna e ordem informada
+         * @param  array  $array
+         * @param  string $column
+         * @return array
+         */
+        function ordenateAll(array $array, string $column, bool $asc = true): array
+        {
+            // definindo na sessão para uso dentro da função de ordenação
+            @session_start();
+            $_SESSION['ORDENATE_COLUMN'] = $column;
+            $_SESSION['ORDENATE_ASC']    = $asc;
+
+            uasort($array, function ($data_a, $data_b) {
+
+                // pegando os valores da coluna indicada conforme o tipo de dado passado
+                $vale_a = is_object($data_a)? $data_a->{$_SESSION['ORDENATE_COLUMN']} ?? '' : $data_a[$_SESSION['ORDENATE_COLUMN']] ?? '';
+                $vale_b = is_object($data_b)? $data_b->{$_SESSION['ORDENATE_COLUMN']} ?? '' : $data_b[$_SESSION['ORDENATE_COLUMN']] ?? '';
+
+                // verifica se o valor é numero para uma melhor ordenação
+                if(is_numeric($vale_a)) $vale_a = (int) $vale_a;
+                if(is_numeric($vale_b)) $vale_b = (int) $vale_b;
+
+                // defime qual dos valores é maior
+                $b_is_bigger = ($vale_a < $vale_b);
+                $a_is_bigger = ($vale_a > $vale_b);
+
+                // se os valores são iguais
+                if( $vale_a == $vale_b ) return 0;
+
+                // se a ordenação for ascendente
+                if($_SESSION['ORDENATE_ASC']) return ( $b_is_bigger? -1 : 1 );
+
+                // se a ordenação for descendente
+                return ( $a_is_bigger? -1 : 1 );
+            });
+
+            return $array;
+        }
+    }
+
