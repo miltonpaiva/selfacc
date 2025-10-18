@@ -19,6 +19,8 @@ Route::get('/logout',         [App\Http\Controllers\AccountController::class, 'l
 Route::post('/new-order',    [App\Http\Controllers\OrderController::class, 'upInsertOrder'])->name('order.new');
 Route::post('/update-order', [App\Http\Controllers\OrderController::class, 'upInsertOrder'])->name('order.update');
 
+// tables
+Route::any('/get-tables', [App\Http\Controllers\AccountController::class, 'getTables'])->name('account.get_tables');
 
 // music
 Route::get('/music-request-code',  [App\Http\Controllers\MusicQueueController::class, 'requestAuthCode'])->name('music.request_auth_code');
