@@ -50,7 +50,7 @@ class SimpleValuesSeeder extends Seeder
      */
     public function run(): void
     {
-        SimpleValues::truncate();
+        // SimpleValues::truncate();
 
         foreach (self::SEED_VALUES as $data)
             $results[] = (SimpleValues::create($data)->getKey() ?? null) . ' : ' . json_encode($data);
