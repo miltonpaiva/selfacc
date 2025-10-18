@@ -205,6 +205,8 @@ function setPlaying() {
 
     if (typeof playing_data == 'undefined' || !playing_data || playing_data.length == 0) return;
 
+    if (!document.querySelector('#playing_div')) return;
+
     document.querySelector('#playing_div').innerHTML = getPlayingTemplate(playing_data);
 }
 
