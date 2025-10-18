@@ -79,6 +79,11 @@ class AccountController extends Controller
             return self::error('Não foi possivel criar: ' . $th->getMessage(), $account_data, 500);
         }
 
+        if($request->get('is_admin')){
+            $tables = Account::getActives();
+            return self::success("Criado !", ['tables' => $tables]);
+        }
+
         $results =
         [
             'customer' => convertFieldsMapToForm($customer->toArray(), $customer),
@@ -96,18 +101,12 @@ class AccountController extends Controller
 
     public function indexAdmin()
     {
-        $orders = convertFieldsMapToFormList(Order::all()->toArray(), new Order());
-
-        $grouped = [];
-        foreach ($orders as $key => $order) {
-            $grouped[$order['table_number']][] = $order;
-        }
+        $tables = Account::getActives();
 
         $data =
         [
-            'products'   => convertFieldsMapToFormList(Product::all()->toArray(), new Product()),
-            'categories' => SV::list('category_pd', true),
-            'orders'     => $grouped,
+            'products' => convertFieldsMapToFormList(Product::all()->toArray(), new Product()),
+            'tables'   => $tables,
         ];
 
         return view('index_admin', $data);

@@ -107,13 +107,12 @@ class MusicQueueController extends Controller
 
         $data = $response->getData(true);
 
-        if (!$data) return $response;
+        if (!$data || !$data['success']) return $response;
 
         $new_data = $data['data'];
 
         $new_data['queue']= $queue['queue'];
 
         return self::success($data['message'], $new_data);
-
     }
 }

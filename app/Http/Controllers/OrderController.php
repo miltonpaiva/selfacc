@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Order;
+use App\Models\Account;
 
 class OrderController extends Controller
 {
@@ -14,12 +15,17 @@ class OrderController extends Controller
 
         $data = $response->getData(true);
 
-        if (!$data) return $response;
+        if (!$data || !$data['success']) return $response;
 
-        $auth_data = self::getAuthData();
+        Account::updateTotal($data['data']['account_id']);
 
         $new_data = $data['data'];
-        $new_data['orders'] = Order::getActivesByTableNumber($auth_data['account']['table_number']);
+        $new_data['orders'] = Order::getActivesByTableNumber($data['data']['table_number']);
+
+        if($request->get('is_admin')){
+            $tables = Account::getActives();
+            $new_data['tables'] = $tables;
+        }
 
         return self::success($data['message'], $new_data);
     }
