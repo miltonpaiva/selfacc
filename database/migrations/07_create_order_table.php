@@ -25,7 +25,7 @@ return new class extends Migration
 
             // Colunas de Dados
             $table->unsignedInteger('o_quantity'); // int, not null (assumindo que quantidade é sempre positiva)
-            $table->string('o_observations');
+            $table->string('o_observations')->nullable();
             // Decimal: 8 dígitos no total, 2 casas decimais (conforme o diagrama)
             $table->decimal('o_total', 8, 2);    // decimal:8,2, not null
 
