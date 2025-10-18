@@ -2592,7 +2592,7 @@ body {
 }
 
 .custom-popup--active {
-    display: flex;
+    display: flex !important;
 }
 
 .custom-popup--active--secondary{
