@@ -248,7 +248,10 @@ class Order extends Model
     public static function getActivesByTableNumber(int $table_number): ?array
     {
         $accounts = Account::where(
-            [ ['a_table_number', '=', $table_number], ]
+            [ 
+                ['a_table_number', '=', $table_number],
+                ['a_sv_status_ac_fk', '!=', SV::getValueId('status_ac', 'Fechada')],
+            ]
         )->orderBy('a_dt_updated', 'desc')
          ->get()
          ->toArray();
