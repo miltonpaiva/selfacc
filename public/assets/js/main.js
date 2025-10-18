@@ -355,3 +355,14 @@ if (verifyUserLogged()) setInterval(function(){
         setQueueList();
     });
 }, 5000);
+
+
+if (window.location.href.indexOf('/admin') > -1) setInterval(function(){
+    sendRequestDefault('/api/get-tables', function (response) {
+        if (!response || !response.success) return;
+
+        tables_data = response.data.tables;
+        updateTablesList();
+
+    });
+}, 5000);
