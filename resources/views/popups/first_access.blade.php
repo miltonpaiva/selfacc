@@ -27,6 +27,16 @@
             <option value="18">18</option>
             <option value="19">19</option>
             <option value="20">20</option>
+            <option value="20">20</option>
+            <option value="21">21</option>
+            <option value="22">22</option>
+            <option value="23">23</option>
+            <option value="24">24</option>
+            <option value="26">26</option>
+            <option value="27">27</option>
+            <option value="28">28</option>
+            <option value="29">29</option>
+            <option value="30">30</option>
         </select>
         <input type="text"   class="custom-popup__input" id="name" placeholder="Seu nome">
         <input type="number" class="custom-popup__input" id="code" placeholder="Sua senha ex: 1234" min="0001" max="9999">

@@ -77,7 +77,7 @@
 
     @include('popups.prompt')
 
-    @include('popups.new_product')
+    @include('popups.new_order')
 
     @include('popups.messages')
 

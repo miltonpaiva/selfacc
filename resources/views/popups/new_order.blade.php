@@ -32,7 +32,7 @@
             </div>
 
             <div class="product-popup__observations">
-                <label class="product-popup__label" for="productObservations">
+                <label class="product-popup__label" for="observations">
                     Observações (opcional)
                 </label>
                 <textarea class="product-popup__textarea" id="observations" placeholder="Ex: Sem cebola, ponto da carne mal passado, etc..." rows="4" maxlength="200" ></textarea>

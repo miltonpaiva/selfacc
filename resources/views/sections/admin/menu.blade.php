@@ -1,11 +1,6 @@
 <!-- CARDAPIO COMPLETO SECTION -->
-<section class="menu" id="cardapio">
+<section class="menu">
     <div class="menu__container">
-        <div class="menu__header">
-            <h3 class="menu__title">Nosso Cardápio</h3>
-            <p class="menu__subtitle">Sabores que refrescam e agradam a galera</p>
-        </div>
-
         <!-- Campo de Busca -->
         <div class="menu__search">
             <div class="search-box">
@@ -13,48 +8,117 @@
                     type="text"
                     class="search-box__input"
                     id="menuSearch"
-                    placeholder="Buscar por nome do produto..."
+                    placeholder="Buscar por nome do cliente, numero da mesa..."
                     aria-label="Buscar produtos"
                 >
                 <button class="search-box__clear" id="clearSearch" aria-label="Limpar busca">
                     ✕
                 </button>
             </div>
-            <p class="menu__search-results" id="searchResults"></p>
+            <p class="menu__search-results" id="searchResultsTables"></p>
         </div>
 
-        <!-- Filtro de Categorias -->
-        <div class="menu__filters">
-            <button class="menu__filter menu__filter--active" data-category="todos">
-                Todos
-            </button>
-            <?php foreach ($categories as $category_id => $title): ?>
-                <button class="menu__filter" data-category="<?= slugify($title); ?>">
-                    <?= $title; ?>
-                </button>
-            <?php endforeach; ?>
-        </div>
-
-        <!-- Grid de Produtos -->
-        <div class="menu__grid">
-
-            <?php foreach ($products as $product): ?>
-                <article class="menu-item" data-category="<?= slugify($product['category_description']); ?>" data-product_id="<?= $product['id']; ?>">
-                    <div class="menu-item__image">
-
-                    </div>
-                    <div class="menu-item__content">
-                        <div class="menu-item__header">
-                            <h4 class="menu-item__name"><?= $product['name']; ?></h4>
-                            <span class="menu-item__price">R$ <?= number_format($product['price'], 2, ',', '.'); ?></span>
-                        </div>
-                        <p class="menu-item__description"><?= $product['description']; ?></p>
-                        <span class="menu-item__badge menu-item__badge--drinks"><?= $product['category_description']; ?></span>
-                    </div>
-                </article>
-
-            <?php endforeach; ?>
+        <div class="menu__grid" id="tables_content">
 
         </div>
+
     </div>
 </section>
+
+
+<!-- POPUP DE PRODUTO -->
+<div class="product-popup" id="newOrderPopupAdmin">
+    <div class="product-popup__content">
+        <button class="product-popup__close popup_close" aria-label="Fechar">✕</button>
+
+        <div class="product-popup__header">
+            <div class="product-popup__info">
+                <h3 class="product-popup__title" id="new_order_title">Adicionar pedido Mesa 00</h3>
+            </div>
+        </div>
+
+        <div class="product-popup__body">
+
+            <select id="product_id" class="custom-popup__input" onchange="calculateAndSetTotal(1)">
+                <option value="">Selecione o produto</option>
+                <?php foreach ($products as $product): ?>
+                    <option value="<?= $product['id']; ?>">
+                        <?= $product['name']; ?> | R$ <?= number_format($product['price'], 2, ',', '.'); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+
+            <select id="account_id" class="custom-popup__input">
+                <option value="">Selecione o cliente</option>
+            </select>
+            <div class="product-popup__quantity">
+                <label class="product-popup__label">Quantidade</label>
+                <div class="product-popup__quantity-controls">
+                    <button class="product-popup__qty-btn" id="productQtyMinus" aria-label="Diminuir quantidade">
+                        −
+                    </button>
+                    <input type="number" class="product-popup__qty-input" id="quantity" value="1" min="1" max="99" readonly >
+                    <button class="product-popup__qty-btn" id="productQtyPlus" aria-label="Aumentar quantidade">
+                        +
+                    </button>
+                </div>
+            </div>
+
+            <div class="product-popup__observations">
+                <label class="product-popup__label" for="observations">
+                    Observações (opcional)
+                </label>
+                <textarea class="product-popup__textarea" id="observations" placeholder="Ex: Sem cebola, ponto da carne mal passado, etc..." rows="4" maxlength="200" ></textarea>
+            </div>
+        </div>
+
+        <div class="product-popup__footer">
+            <div class="product-popup__total only_waiter">
+                <span class="product-popup__total-label">Total:</span>
+                <span class="product-popup__total-value" id="order_total">R$ 0,00</span>
+                <input type="hidden" id="total" value="0">
+                <input type="hidden" id="is_admin" value="1">
+            </div>
+            <button class="product-popup__add-btn" onclick="registerAdminOrder()">
+                <svg class="header__orders-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V5C21 3.89543 20.1046 3 19 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <path d="M7 7H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                    <path d="M7 12H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                    <path d="M7 17H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                </svg>
+                Adicionar à Comanda
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<!-- POPUP DA COMANDA -->
+<div class="orders-popup" id="ordersPopupAdmin">
+    <div class="orders-popup__content">
+        <div class="orders-popup__header">
+            <svg class="orders-popup__empty-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V5C21 3.89543 20.1046 3 19 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M8 10L16 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M8 14L12 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+
+            <h3 class="orders-popup__title" id="command_table_number">Mesa 00 | R$ 00,00</h3>
+            <button class="orders-popup__close popup_close"  aria-label="Fechar comanda">
+                ✕
+            </button>
+        </div>
+        <div class="orders-popup__list" id="ordersListAdmin">
+
+            <!-- Exemplo de item (será gerado dinamicamente) -->
+            <div class="order-item">
+                <div class="order-item__header">
+                    <h4 class="order-item__name">AINDA NÃO HÁ PEDIDOS</h4>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
