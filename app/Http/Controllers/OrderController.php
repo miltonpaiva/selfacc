@@ -24,6 +24,7 @@ class OrderController extends Controller
         if (!$data || !$data['success']) return $response;
 
         Account::updateTotal($data['data']['account_id']);
+        Account::updateStatus($data['data']['account_id']);
 
         $new_data['new']    = $data['data'];
         $new_data['orders'] = Order::getActivesByTableNumber($data['data']['table_number']);

@@ -134,7 +134,7 @@ class Order extends Model
         'observations'        => 'o_observations',
         'total'               => 'o_total',
         'date_created'        => 'o_dt_created',
-        'date_created'        => 'o_dt_created',
+        'date_updated'        => 'o_dt_updated',
         'product_name'        => 'added_linked_product_name',
         'table_number'        => 'added_linked_account_table_number',
         'status_description'  => 'added_linked_status_description',
@@ -284,5 +284,56 @@ class Order extends Model
                     ->get()
                     ->toArray();
         return convertFieldsMapToFormList($orders, new self());
+    }
+
+    public static function agroupOrders(array $orders): array
+    {
+        $agrouped['new']       = [];
+        $agrouped['conclused'] = [];
+        $agrouped['all']       = $orders;
+
+        foreach ($orders as $order) {
+
+            $order['is_new'] = ($order['status_id'] == SV::getValueId('status_or', 'Novo'));
+
+            if ($order['is_new']) {
+                $agrouped['new'][] = $order;
+            }
+
+            if (!$order['is_new']) {
+                $key = "product_{$order['product_id']}_account_{$order['account_id']}";
+                $conclused_by_product_account[$key][] = $order;
+            }
+        }
+
+        foreach ($conclused_by_product_account as $flag => $conclused_list) {
+
+            foreach ($conclused_list as $order) {
+
+                if (!isset($conclused_list_grouped[$flag]))
+                    $conclused_list_grouped[$flag] = $order;
+
+                unset($conclused_list_grouped[$flag]['id']);
+                unset($conclused_list_grouped[$flag]['date_created']);
+                unset($conclused_list_grouped[$flag]['date_updated']);
+                unset($conclused_list_grouped[$flag]['is_new']);
+
+                $conclused_list_grouped[$flag]['observations'] = 'Pedidos concluídos agrupados';
+
+                $conclused_list_grouped[$flag]['quantity'] = 0;
+                $conclused_list_grouped[$flag]['total']    = 0;
+
+           }
+
+           foreach ($conclused_list as $order) {
+               $conclused_list_grouped[$flag]['quantity'] += $order['quantity'];
+               $conclused_list_grouped[$flag]['total']    += $order['total'];
+           }
+       }
+
+       $agrouped['conclused'] = $conclused_list_grouped ?? [];
+
+        return $agrouped;
+
     }
 }

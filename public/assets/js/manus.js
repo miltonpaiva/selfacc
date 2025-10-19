@@ -942,9 +942,9 @@ function updateOrdersList() {
                     <span class="order-item__badge order-item__badge--bebidas">${order.status_description}</span>
                 </div>
             </div>
-            <div class="order-item__price">
+            <!-- <div class="order-item__price">
                 <span class="order-item__total-price only_waiter">R$ ${parseFloat(order.total).toFixed(2).replace('.', ',')}</span>
-            </div>
+            </div> -->
         `;
 
         ordersList.appendChild(orderItem);

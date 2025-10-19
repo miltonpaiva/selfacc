@@ -217,6 +217,13 @@ class Account extends Model
         return convertFieldsMapToForm(self::find($id)->toArray(), new self());
     }
 
+    public static function updateStatus(int $id): array
+    {
+        self::find($id)->update(['a_sv_status_ac_fk' => SV::getValueId('status_ac', 'Aberta')]);
+
+        return convertFieldsMapToForm(self::find($id)->toArray(), new self());
+    }
+
     public static function getActives(): array
     {
         $accounts = self::where(
@@ -231,23 +238,36 @@ class Account extends Model
         $accounts_ids = array_column($accounts, 'id');
         $orders       = Order::getByAccountsList($accounts_ids);
 
-        $new_qtd = [];
-        foreach ($orders as $order) {
+        foreach ($orders as $key => $order) {
             $account_key = searchAll($accounts, 'id', $order['account_id']);
 
             if(is_null($account_key)) continue;
 
-            $order['is_new']        = ($order['status_id'] == SV::getValueId('status_or', 'Novo'));
-            $order['customer_name'] = $accounts[$account_key]['customer_name'];
+            $orders[$key]['customer_name'] = $accounts[$account_key]['customer_name'];
+        }
+
+        $orders = Order::agroupOrders($orders);
+
+        $join_orders = array_merge(
+            $orders['new']       ?? [],
+            $orders['conclused'] ?? []
+        );
+
+        foreach ($join_orders as $order) {
+            $account_key = searchAll($accounts, 'id', $order['account_id']);
+
+            if(is_null($account_key)) continue;
 
             $accounts[$account_key]['orders'][] = $order;
 
-            if ($order['is_new']){
+            // calculando a quantidade de novos pedidos por mesa
+            if (isset($order['is_new']) && $order['is_new']) {
                 if (!isset($new_qtd[$order['table_number']]))
                     $new_qtd[$order['table_number']] = 0;
 
                 $new_qtd[$order['table_number']]++;
             }
+
         }
 
         $tables = [];

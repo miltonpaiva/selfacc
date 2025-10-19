@@ -365,6 +365,13 @@ function returnPopupData(popup) {
 }
 
 function registerAdminOrder() {
+
+    let accoubt_id = current_popup.popup.querySelector('#account_id').value;
+    if (!accoubt_id || accoubt_id == '') {
+        customAlert('Por favor, selecione a conta para registrar o pedido!', 'Atenção!');
+        return;
+    }
+
     registerPopupData(current_popup.popup);
     registerOrder(current_popup.popup);
 }
