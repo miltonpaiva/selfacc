@@ -931,6 +931,7 @@ function updateOrdersList() {
         orderItem.innerHTML = `
             <div class="order-item__header">
                 <h4 class="order-item__name">${order.product_name}</h4>
+                <p>${order.observations?order.observations:''}</h4>
             </div>
             <div class="order-item__details">
                 <div class="order-item__quantity">
@@ -1010,6 +1011,7 @@ function updateOrdersListAdmin() {
         orderItem.innerHTML = `
             <div class="order-item__header">
                 <h4 class="order-item__name">${order.product_name}</h4>
+                <p>${order.observations?order.observations:''}</h4>
             </div>
             <div class="order-item__details">
                 <div class="order-item__quantity">
@@ -1096,6 +1098,9 @@ function createNewTable() {
         updateTablesList(table_number);
 
         customAlert('Mesa criada/atualizada com sucesso!', 'Sucesso!')
+
+        select_table_number.value = '';
+        name_input.value          = '';
 
     }, params);
 
