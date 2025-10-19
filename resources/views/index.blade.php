@@ -8,7 +8,7 @@
 
     <!-- CSS DA PÁGINA INICIAL -->
     <style type="text/css">
-        @import "{{ asset('assets/css/styles.css') }}";
+        @import "{{ asset('assets/css/styles.css?' . uniqid()) }}";
     </style>
     <!-- CSS DA PÁGINA INICIAL -->
 
@@ -92,8 +92,8 @@
 @endsection
 
 @section('javascript')
-    <script src="{{ asset('assets/js/manus.js') }}"></script>
-    <script src="{{ asset('assets/js/main.js') }}"></script>
+    <script src="{{ asset('assets/js/manus.js?' . uniqid()) }}"></script>
+    <script src="{{ asset('assets/js/main.js?' . uniqid()) }}"></script>
 @endsection
 
 
