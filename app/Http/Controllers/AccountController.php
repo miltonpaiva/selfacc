@@ -32,7 +32,7 @@ class AccountController extends Controller
             $queue = [];
         }
 
-        $customer_queue = MusicQueue::getQueue();
+        $customer_queue = MusicQueue::getQueue()['queue'] ?? [];
 
         $queue['queue'] = array_merge($customer_queue, $queue['queue'] ?? []);
 

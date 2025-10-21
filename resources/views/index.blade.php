@@ -14,10 +14,10 @@
 
     <script>
         var user_logged  = <?= empty($auth_data)? 'false' : 'true' ; ?>;
-        var auth_data    = <?= json_encode($auth_data ?? null); ?>;
-        var orders_data  = <?= json_encode($orders ?? null); ?>;
-        var playing_data = <?= json_encode($playing ?? null); ?>;
-        var queue_data   = <?= json_encode($queue ?? null); ?>;
+        var auth_data    = <?= json_encode($auth_data      ?? null); ?>;
+        var orders_data  = <?= json_encode($orders         ?? null); ?>;
+        var playing_data = <?= json_encode($playing        ?? null); ?>;
+        var queue_data   = <?= json_encode($queue['queue'] ?? null); ?>;
     </script>
 
 @endsection
