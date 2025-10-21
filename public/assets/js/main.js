@@ -99,6 +99,31 @@ function concludeOrderAdmin(order_id) {
     }, params);
 }
 
+function repeatOrder(product_id, account_id) {
+    let confirm_repeat = confirm('Deseja adicionar 1 unidade do produto em questão na comanda do cliente?');
+    if (!confirm_repeat) return;
+
+    product_price = products_data.find(product => product.id == product_id).price ?? 0;
+
+    if (!product_price) {
+        alert('Produto não encontrado!');
+        return;
+    }
+
+    popups_data['fake_popup_order_id'] = {
+        'product_id':   product_id,
+        'account_id':   account_id,
+        'total':        product_price,
+        'quantity':     1,
+        'observations': '',
+        'is_admin':     true,
+    };
+
+    let fake_popup = {id:'fake_popup_order_id'};
+
+    registerOrder(fake_popup);
+}
+
 function registerCustomer(popup) {
 
     let url    = '/api/new-account'
@@ -366,8 +391,8 @@ function returnPopupData(popup) {
 
 function registerAdminOrder() {
 
-    let accoubt_id = current_popup.popup.querySelector('#account_id').value;
-    if (!accoubt_id || accoubt_id == '') {
+    let account_id = current_popup.popup.querySelector('#account_id').value;
+    if (!account_id || account_id == '') {
         customAlert('Por favor, selecione a conta para registrar o pedido!', 'Atenção!');
         return;
     }

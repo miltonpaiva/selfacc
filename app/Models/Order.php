@@ -306,7 +306,7 @@ class Order extends Model
             }
         }
 
-        foreach ($conclused_by_product_account as $flag => $conclused_list) {
+        foreach ($conclused_by_product_account ?? [] as $flag => $conclused_list) {
 
             foreach ($conclused_list as $order) {
 
