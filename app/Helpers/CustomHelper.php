@@ -254,3 +254,26 @@ use Illuminate\Database\Eloquent\Model;
         }
     }
 
+
+    if (!function_exists('getMinutes')){
+        /**
+         * getMinutes - retorna a diferença em minutos entre a data informada e a data atual
+         *
+         * @param  string $date
+         * @return int
+         */
+        function getMinutes(string $date): int
+        {
+            setlocale(LC_TIME, 'portuguese');
+            date_default_timezone_set('America/Sao_Paulo');
+
+            $timestamp1 = strtotime($date);
+            $timestamp2 = strtotime('now');
+
+            $difference_in_seconds = abs($timestamp2 - $timestamp1); // Use abs() for positive difference
+
+            $difference_in_minutes = floor($difference_in_seconds / 60);
+
+            return $difference_in_minutes;
+        }
+    }
