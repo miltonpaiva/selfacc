@@ -297,6 +297,7 @@ class Order extends Model
             $order['is_new'] = ($order['status_id'] == SV::getValueId('status_or', 'Novo'));
 
             if ($order['is_new']) {
+                $order['minutes']  = getMinutes($order['date_updated']);
                 $agrouped['new'][] = $order;
             }
 

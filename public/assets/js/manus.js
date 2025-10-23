@@ -931,7 +931,7 @@ function updateOrdersList() {
         orderItem.innerHTML = `
             <div class="order-item__header">
                 <h4 class="order-item__name">${order.product_name}</h4>
-                <p>${order.observations?order.observations:''}</h4>
+                <p>${order.observations?order.observations:''}</p>
             </div>
             <div class="order-item__details">
                 <div class="order-item__quantity">
@@ -1019,7 +1019,8 @@ function updateOrdersListAdmin() {
         orderItem.innerHTML = `
             <div class="order-item__header">
                 <h4 class="order-item__name">${order.product_name}</h4>
-                <p>${order.observations?order.observations:''}</h4>
+                <p>${order.observations?order.observations:''}</p>
+                <p>${order.minutes?'(' + order.minutes + ' min)':''}</p>
             </div>
             <div class="order-item__details">
                 <div class="order-item__quantity">

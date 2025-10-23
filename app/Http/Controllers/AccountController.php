@@ -138,5 +138,7 @@ class AccountController extends Controller
 
         if ($is_table)  return Account::closeTableByNumber($table_number);
         if (!$is_table) return Account::closeAccount($account_id);
+
+        return self::error('Parâmetros inválidos.');
     }
 }
