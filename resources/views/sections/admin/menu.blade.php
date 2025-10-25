@@ -84,7 +84,7 @@
                 <option value="">Selecione o produto</option>
                 <?php foreach ($products as $product): ?>
                     <option value="<?= $product['id']; ?>">
-                        <?= $product['name']; ?> | R$ <?= number_format($product['price'], 2, ',', '.'); ?>
+                        <?= $product['name']; ?> | R$ <?= number_format($product['price'], 2, ',', '.'); ?> | <?= $product['category_description']; ?>
                     </option>
                 <?php endforeach; ?>
             </select>
