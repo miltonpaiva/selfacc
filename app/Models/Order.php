@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Account;
 use App\Models\Product;
 use App\Models\SimpleValues as SV;
+use Illuminate\Support\Facades\DB;
+
 
 /**
  * Modelo Order
@@ -297,7 +299,7 @@ class Order extends Model
             $order['is_new'] = ($order['status_id'] == SV::getValueId('status_or', 'Novo'));
 
             if ($order['is_new']) {
-                $order['minutes']  = getMinutes($order['date_updated']);
+                $order['minutes']  = getMinutes($order['date_updated'], false);
                 $agrouped['new'][] = $order;
             }
 

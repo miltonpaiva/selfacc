@@ -262,10 +262,15 @@ use Illuminate\Database\Eloquent\Model;
          * @param  string $date
          * @return int
          */
-        function getMinutes(string $date): int
+        function getMinutes(string $date, ?bool $is_portuguese = true): int
         {
-            setlocale(LC_TIME, 'portuguese');
-            date_default_timezone_set('America/Sao_Paulo');
+            if($is_portuguese){
+                setlocale(LC_TIME, 'portuguese');
+                date_default_timezone_set('America/Sao_Paulo');
+            }else{
+                setlocale(LC_TIME, 'en_US');
+                date_default_timezone_set('UTC');
+            }
 
             $timestamp1 = strtotime($date);
             $timestamp2 = strtotime('now');
