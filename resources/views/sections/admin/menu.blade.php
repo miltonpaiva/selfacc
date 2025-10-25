@@ -149,6 +149,9 @@
                 ✕
             </button>
         </div>
+        <div class="orders-popup__header">
+            <h4 class="orders-popup__more-values" id="more_order_values">C. Credito: 00,00 | C. Debito: 00,00</h4>
+        </div>
         <div class="orders-popup__list" id="ordersListAdmin">
 
             <!-- Exemplo de item (será gerado dinamicamente) -->

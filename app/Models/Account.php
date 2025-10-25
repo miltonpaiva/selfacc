@@ -275,14 +275,18 @@ class Account extends Model
 
             $table = $tables[$account['table_number']] ?? [];
 
-            if (!isset($table['number']))         $table['number']         = $account['table_number'];
-            if (!isset($table['total']))          $table['total']          = 0.0;
-            if (!isset($table['total_formated'])) $table['total_formated'] = '00,00';
-            if (!isset($table['customers']))      $table['customers']      = [];
-            if (!isset($table['orders']))         $table['orders']         = [];
-            if (!isset($table['new_order_qtd']))  $table['new_order_qtd']  = $new_qtd[$account['table_number']] ?? 0;
-            if (!isset($table['updated_date']))   $table['updated_date']   = $account['date_updated'];
-            if (!isset($table['updated_time']))   $table['updated_time']   = strtotime($account['date_updated']);
+            if (!isset($table['number']))                     $table['number']                     = $account['table_number'];
+            if (!isset($table['total']))                      $table['total']                      = 0.0;
+            if (!isset($table['total_credit_card']))          $table['total_credit_card']          = 0.0;
+            if (!isset($table['total_debit_card']))           $table['total_debit_card']           = 0.0;
+            if (!isset($table['total_formated']))             $table['total_formated']             = '00,00';
+            if (!isset($table['total_credit_card_formated'])) $table['total_credit_card_formated'] = '00,00';
+            if (!isset($table['total_debit_card_formated']))  $table['total_debit_card_formated']  = '00,00';
+            if (!isset($table['customers']))                  $table['customers']                  = [];
+            if (!isset($table['orders']))                     $table['orders']                     = [];
+            if (!isset($table['new_order_qtd']))              $table['new_order_qtd']              = $new_qtd[$account['table_number']] ?? 0;
+            if (!isset($table['updated_date']))               $table['updated_date']               = $account['date_updated'];
+            if (!isset($table['updated_time']))               $table['updated_time']               = strtotime($account['date_updated']);
 
             $table['customers'][] = [
                 'id'             => $account['customer_id'],
@@ -299,7 +303,12 @@ class Account extends Model
             // calculando o total da mesa
             $table['total'] += $account['total_consumed'];
 
-            $table['total_formated'] = number_format($table['total'], 2, ',', '.');
+            $table['total_credit_card'] = round(($table['total'] * (4.98 / 100)) + $table['total'], 2);
+            $table['total_debit_card']  = round(($table['total'] * (1.99 / 100)) + $table['total'], 2);
+
+            $table['total_credit_card_formated'] = number_format($table['total_credit_card'], 2, ',', '.');
+            $table['total_debit_card_formated']  = number_format($table['total_debit_card'], 2, ',', '.');
+            $table['total_formated']             = number_format($table['total'], 2, ',', '.');
 
             $tables[$account['table_number']] = $table;
         }

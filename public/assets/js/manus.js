@@ -968,6 +968,7 @@ function getTablesData() {
 function updateOrdersListAdmin() {
     const ordersList           = document.getElementById('ordersListAdmin');
     const table_command_number = document.getElementById('command_table_number');
+    const more_order_values    = document.getElementById('more_order_values');
 
     let current_table_number = current_popup.popup_trigger_element.getAttribute('table_number');
     let table_data           = getTablesData()         ?? {};
@@ -988,6 +989,7 @@ function updateOrdersListAdmin() {
     }
 
     table_command_number.innerHTML = `Mesa ${current_table_number}  | R$ ${table_data['total_formated']}`;
+    more_order_values.innerHTML    = `PIX: R$ ${table_data['total_formated']} | C. Credito: R$ ${table_data['total_credit_card_formated']} | C. Debito: R$ ${table_data['total_debit_card_formated']}`;
 
     console.log('orders_data', orders_data);
 
