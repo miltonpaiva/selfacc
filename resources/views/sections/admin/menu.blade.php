@@ -82,12 +82,48 @@
 
             <select id="product_id" class="custom-popup__input" onchange="calculateAndSetTotal(1)">
                 <option value="">Selecione o produto</option>
-                <?php foreach ($products as $product): ?>
-                    <option value="<?= $product['id']; ?>">
-                        <?= $product['name']; ?> | R$ <?= number_format($product['price'], 2, ',', '.'); ?> | <?= $product['category_description']; ?>
-                    </option>
-                <?php endforeach; ?>
             </select>
+
+            <div class="search-box">
+                <input type="text" class="search-box__input" id="" placeholder="Buscar por produto" aria-label="Buscar produtos">
+                <button class="search-box__clear" id="" aria-label="Limpar busca">
+                    ✕
+                </button>
+            </div>
+
+            <div class="products-table__wrapper">
+                <table class="products-table__table">
+                    <thead class="products-table__thead">
+                        <tr class="products-table__row">
+                            <th class="products-table__th products-table__th--name">Nome</th>
+                            <th class="products-table__th products-table__th--price">Preço</th>
+                            <th class="products-table__th products-table__th--category">Categoria</th>
+                            <th class="products-table__th products-table__th--number">#</th>
+                        </tr>
+                    </thead>
+                    <tbody class="products-table__tbody">
+
+                        <?php foreach ($products as $product): ?>
+
+                            <tr class="products-table__row">
+                                <td class="products-table__td products-table__td--name"><?= $product['name']; ?></td>
+                                <td class="products-table__td products-table__td--price">R$ <?= number_format($product['price'], 2, ',', '.'); ?></td>
+                                <td class="products-table__td products-table__td--category">
+                                    <span class="products-table__badge products-table__badge--drinks">
+                                        <?= $product['category_description']; ?>
+                                    </span>
+                                </td>
+                                <td class="products-table__td products-table__td--number">
+                                    <?= $product['id']; ?>
+                                    <input type="checkbox" value="<?= $product['id']; ?>">
+                                </td>
+                            </tr>
+
+                        <?php endforeach; ?>
+
+                    </tbody>
+                </table>
+            </div>
 
             <select id="account_id" class="custom-popup__input">
                 <option value="">Selecione o cliente</option>

@@ -3197,6 +3197,287 @@ body {
     }
 }
 
+/* ========================================
+   TABELA DE PRODUTOS
+   ======================================== */
+
+.products-table {
+    background: var(--color-white);
+    padding: var(--spacing-xl) var(--spacing-container, var(--container-padding));
+}
+
+.products-table__container {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+}
+
+.products-table__header {
+    margin-bottom: var(--spacing-xl);
+    text-align: center;
+}
+
+.products-table__title {
+    font-size: 28px;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-gold);
+    margin-bottom: var(--spacing-sm);
+}
+
+.products-table__subtitle {
+    font-size: 16px;
+    color: var(--color-gray-dark);
+    font-weight: var(--font-weight-regular);
+}
+
+/* Wrapper com scroll */
+.products-table__wrapper {
+    max-height: 250px;
+    overflow-y: scroll;
+    border: 2px solid var(--color-gray-medium);
+    border-radius: var(--radius-lg);
+    background: var(--color-white);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-top: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+}
+
+/* Customizar scrollbar */
+.products-table__wrapper::-webkit-scrollbar {
+    width: 8px;
+}
+
+.products-table__wrapper::-webkit-scrollbar-track {
+    background: var(--color-gray-light);
+    border-radius: var(--radius-lg);
+}
+
+.products-table__wrapper::-webkit-scrollbar-thumb {
+    background: var(--color-turquoise);
+    border-radius: 4px;
+}
+
+.products-table__wrapper::-webkit-scrollbar-thumb:hover {
+    background: #00A8AA;
+}
+
+/* Tabela */
+.products-table__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+/* Cabeçalho fixo */
+.products-table__thead {
+    position: sticky;
+    top: 0;
+    background: var(--color-black);
+    z-index: 10;
+}
+
+.products-table__th {
+    padding: var(--spacing-sm);
+    text-align: left;
+    color: var(--color-white);
+    font-weight: var(--font-weight-bold);
+    border-bottom: 2px solid var(--color-gold);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.products-table__th--number {
+    width: 50px;
+    text-align: center;
+}
+
+.products-table__th--name {
+    flex: 1;
+    min-width: 95px;
+}
+
+.products-table__th--price {
+    width: 100px;
+    text-align: right;
+}
+
+.products-table__th--category {
+    width: 120px;
+    text-align: center;
+}
+
+/* Linhas */
+.products-table__row {
+    border-bottom: 1px solid var(--color-gray-light);
+    transition: background-color var(--transition-fast);
+}
+
+.products-table__tbody .products-table__row:hover {
+    background-color: rgba(0, 206, 209, 0.05);
+}
+
+/* Células */
+.products-table__td {
+    padding: 8px 6px;
+    color: var(--color-black);
+    font-weight: var(--font-weight-regular);
+}
+
+.products-table__td--number {
+    text-align: center;
+    color: var(--color-gray-dark);
+    font-weight: var(--font-weight-semibold);
+    width: 50px;
+}
+
+.products-table__td--name {
+    color: var(--color-black);
+    font-weight: var(--font-weight-semibold);
+}
+
+.products-table__td--price {
+    text-align: right;
+    color: var(--color-gold);
+    font-weight: var(--font-weight-bold);
+    font-size: 15px;
+}
+
+.products-table__td--category {
+    text-align: center;
+}
+
+/* Badges de categoria */
+.products-table__badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+.products-table__badge--drinks {
+    background: rgba(0, 206, 209, 0.2);
+    color: #00A8AA;
+}
+
+.products-table__badge--bebidas {
+    background: rgba(196, 167, 109, 0.2);
+    color: #A68B5B;
+}
+
+.products-table__badge--petiscos {
+    background: rgba(255, 152, 0, 0.2);
+    color: #F57C00;
+}
+
+.products-table__badge--pratos {
+    background: rgba(244, 67, 54, 0.2);
+    color: #D32F2F;
+}
+
+.products-table__badge--sobremesas {
+    background: rgba(156, 39, 176, 0.2);
+    color: #7B1FA2;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .products-table {
+        padding: var(--spacing-lg) var(--spacing-container, var(--container-padding));
+    }
+    
+    .products-table__title {
+        font-size: 24px;
+    }
+    
+    .products-table__subtitle {
+        font-size: 14px;
+    }
+    
+    .products-table__wrapper {
+        max-height: 250px;
+    }
+    
+    .products-table__table {
+        font-size: 13px;
+    }
+    
+    .products-table__th,
+    .products-table__td {
+        padding: var(--spacing-sm);
+    }
+    
+    .products-table__th--name {
+        min-width: 95px;
+    }
+    
+    .products-table__th--price,
+    .products-table__td--price {
+        width: 80px;
+        font-size: 13px;
+    }
+    
+    .products-table__badge {
+        padding: 3px 8px;
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    .products-table {
+        padding: var(--spacing-md) var(--spacing-container, var(--container-padding));
+    }
+    
+    .products-table__title {
+        font-size: 20px;
+    }
+    
+    .products-table__subtitle {
+        font-size: 13px;
+    }
+    
+    .products-table__wrapper {
+        max-height: 280px;
+        border-radius: var(--radius-md);
+    }
+    
+    .products-table__table {
+        font-size: 12px;
+    }
+    
+    .products-table__th,
+    .products-table__td {
+        padding: 8px 6px;
+    }
+    
+    .products-table__th--number,
+    .products-table__td--number {
+        width: 40px;
+        font-size: 12px;
+    }
+    
+    .products-table__th--name {
+        min-width: 95px;
+    }
+    
+    .products-table__th--price,
+    .products-table__td--price {
+        width: 70px;
+        font-size: 12px;
+    }
+    
+    .products-table__th--category {
+        width: 100px;
+    }
+    
+    .products-table__badge {
+        padding: 2px 6px;
+        font-size: 10px;
+    }
+}
 
 /* custom css */
 
@@ -3204,3 +3485,4 @@ body {
     pointer-events: none;
     background: gainsboro;
 }
+
