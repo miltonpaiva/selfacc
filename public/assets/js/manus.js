@@ -1151,6 +1151,13 @@ function getTablesTemplate(table) {
     `;
 }
 
+/**
+ * atualiza os dados do popup com base na mesa selecionada
+ *
+ * @param   {int|null}  table_number
+ *
+ * @return  {void}
+ */
 function updateProductPopup(table_number = null) {
     let current_table_number = table_number ?? current_popup.popup_trigger_element.getAttribute('table_number');
     let table_data           = getTablesData() ?? {};
@@ -1160,7 +1167,8 @@ function updateProductPopup(table_number = null) {
     let btn_plus             = popup.querySelector('#productQtyPlus');
     let btn_minus            = popup.querySelector('#productQtyMinus');
 
-    popup.querySelector('#product_id').value      = '';
+    clearBadgeCheckbox();
+
     popup.querySelector('#quantity').value        = 1;
     popup.querySelector('#observations').value    = '';
     popup.querySelector('#order_total').innerHTML = 'R$ 0,00';
@@ -1192,12 +1200,7 @@ function updateQuantityAndTotal(is_plus) {
 
     value = parseInt(input_quantity.value);
 
-    console.log('value', value);
-
     let new_quantity     = is_plus? (value+1) : (value-1);
-
-    console.log('new_quantity', new_quantity);
-
     let is_invalid_plus  = (new_quantity == 100);
     let is_invalid_minus = (new_quantity == 0);
 
@@ -1209,12 +1212,12 @@ function updateQuantityAndTotal(is_plus) {
 }
 
 function calculateAndSetTotal(new_quantity) {
-    let popup             = current_popup.popup;
-    let total_text        = popup.querySelector('#order_total');
-    let total_input       = popup.querySelector('#total');
-    let select_product_id = popup.querySelector('#product_id');
+    let popup               = current_popup.popup;
+    let total_text          = popup.querySelector('#order_total');
+    let total_input         = popup.querySelector('#total');
+    let checkbox_product_id = popup.querySelector('input[type="checkbox"]:checked');
 
-    let product = products_data.find(produc => produc.id == select_product_id.value);
+    let product = products_data.find(product => product.id == checkbox_product_id.value);
 
     if (!product){
         alert('produto não selecionado');
