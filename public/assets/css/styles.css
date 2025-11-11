@@ -3255,7 +3255,7 @@ body {
 
 /* Wrapper com scroll */
 .products-table__wrapper {
-    max-height: 250px;
+    max-height: 350px;
     overflow-y: scroll;
     border: 2px solid var(--color-gray-medium);
     border-radius: var(--radius-lg);
@@ -3430,7 +3430,7 @@ body {
     }
     
     .products-table__wrapper {
-        max-height: 250px;
+        max-height: 350px;
     }
     
     .products-table__table {
@@ -3472,7 +3472,7 @@ body {
     }
     
     .products-table__wrapper {
-        max-height: 280px;
+        max-height: 350px;
         border-radius: var(--radius-md);
     }
     
