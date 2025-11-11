@@ -85,10 +85,7 @@
             </select>
 
             <div class="search-box">
-                <input type="text" class="search-box__input" placeholder="Buscar por produto" aria-label="Buscar produtos" onkeyup="searchItens('search_item_products', this)">
-                <button class="search-box__clear" aria-label="Limpar busca">
-                    ✕
-                </button>
+                <input type="text" class="search-box__input" placeholder="Buscar por produto" aria-label="Buscar produtos" onkeyup="searchItens('search_item_products', this)" id="input_search_product">
             </div>
 
             <div class="products-table__wrapper">

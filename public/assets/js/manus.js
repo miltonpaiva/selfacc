@@ -1167,11 +1167,14 @@ function updateProductPopup(table_number = null) {
     let btn_plus             = popup.querySelector('#productQtyPlus');
     let btn_minus            = popup.querySelector('#productQtyMinus');
 
+    // resetar valores
     clearBadgeCheckbox();
+    searchItens('search_item_products', {value: ''});
 
-    popup.querySelector('#quantity').value        = 1;
-    popup.querySelector('#observations').value    = '';
-    popup.querySelector('#order_total').innerHTML = 'R$ 0,00';
+    popup.querySelector('#quantity').value             = 1;
+    popup.querySelector('#observations').value         = '';
+    popup.querySelector('#input_search_product').value = '';
+    popup.querySelector('#order_total').innerHTML      = 'R$ 0,00';
 
     order_title.innerHTML     = `Adicionar pedido Mesa ${table_data.number}`;
     select_account.innerHTML = '<option value="">Selecione o cliente</option>';
