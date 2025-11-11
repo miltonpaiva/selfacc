@@ -942,6 +942,30 @@ body {
     align-self: flex-start;
 }
 
+.badge_checkbox_label {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: var(--radius-sm);
+    border: solid 2px var(--color-gold);
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: auto;
+    align-self: flex-start;
+    color: var(--color-gold);
+
+}
+
+.badge_checkbox_label--selected{
+    background-color: var(--color-gold);
+    color: var(--color-white);
+}
+
+.badge_checkbox{
+    display:none;
+}
+
 .menu-item__badge--drinks {
     background-color: rgba(0, 206, 209, 0.1);
     color: var(--color-turquoise);
@@ -3281,7 +3305,7 @@ body {
     color: var(--color-white);
     font-weight: var(--font-weight-bold);
     border-bottom: 2px solid var(--color-gold);
-    font-size: 13px;
+    font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -3346,12 +3370,20 @@ body {
     text-align: center;
 }
 
+.products-table__td--category-colspan {
+    text-align: center;
+    text-transform: uppercase;
+    background: var(--color-black);
+    color: var(--color-white);
+    font-weight: bold;
+}
+
 /* Badges de categoria */
 .products-table__badge {
     display: inline-block;
     padding: 4px 12px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 8px;
     font-weight: var(--font-weight-semibold);
     text-transform: uppercase;
     letter-spacing: 0.3px;
@@ -3422,7 +3454,7 @@ body {
     
     .products-table__badge {
         padding: 3px 8px;
-        font-size: 11px;
+        font-size: 8px;
     }
 }
 
@@ -3445,7 +3477,7 @@ body {
     }
     
     .products-table__table {
-        font-size: 12px;
+        font-size: 10px;
     }
     
     .products-table__th,
@@ -3460,13 +3492,13 @@ body {
     }
     
     .products-table__th--name {
-        min-width: 95px;
+        min-width: 80px;
     }
     
     .products-table__th--price,
     .products-table__td--price {
         width: 70px;
-        font-size: 12px;
+        font-size: 10px;
     }
     
     .products-table__th--category {
@@ -3475,7 +3507,7 @@ body {
     
     .products-table__badge {
         padding: 2px 6px;
-        font-size: 10px;
+        font-size: 8px;
     }
 }
 
