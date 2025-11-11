@@ -171,4 +171,25 @@ class Product extends Model
         // Assume que o modelo SimpleValues tem a coluna 'sv_title'
         return $category ? $category->sv_title : null;
     }
+
+    /**
+     * getProductsAgrouped - Retorna os produtos agrupados por categoria.
+     *
+     * @return array
+     */
+    public static function getProductsAgrouped(): array
+    {
+        $products_form = convertFieldsMapToFormList(Product::all()->toArray(), new Product());
+
+        foreach($products_form as $key => $product) {
+            $category = $product['category_description'] ?? 'Sem Categoria';
+            $c_slug   = slugify($category);
+
+            $grouped_products[$c_slug]['category_name'] = $category;
+            $grouped_products[$c_slug]['category_slug'] = $c_slug;
+            $grouped_products[$c_slug]['products'][]    = $product;
+        }
+
+        return $grouped_products ?? [];
+    }
 }
