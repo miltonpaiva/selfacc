@@ -99,16 +99,27 @@ function concludeOrderAdmin(order_id) {
     }, params);
 }
 
+/**
+ * repetindo o pedido com 1 unidade
+ *
+ * @param   {string}  product_id
+ * @param   {string}  account_id
+ *
+ * @return  {void}
+ */
 function repeatOrder(product_id, account_id) {
-    let confirm_repeat = confirm('Deseja adicionar 1 unidade do produto em questão na comanda do cliente?');
-    if (!confirm_repeat) return;
+    product = products_data.find(product => product.id == product_id) ?? null;
 
-    product_price = products_data.find(product => product.id == product_id).price ?? 0;
-
-    if (!product_price) {
+    if (!product) {
         alert('Produto não encontrado!');
         return;
     }
+
+    let product_price = product ? product.price : 0;
+
+    let confirm_repeat = confirm(`Deseja adicionar 1 unidade do produto [${product.name.toUpperCase()}] em questão na comanda do cliente?`);
+
+    if (!confirm_repeat) return;
 
     popups_data['fake_popup_order_id'] = {
         'product_id':   product_id,
@@ -124,6 +135,13 @@ function repeatOrder(product_id, account_id) {
     registerOrder(fake_popup);
 }
 
+/**
+ * cria a conta do usuario
+ *
+ * @param   {Element}  popup
+ *
+ * @return  {void}
+ */
 function registerCustomer(popup) {
 
     let url    = '/api/new-account'
@@ -379,10 +397,22 @@ function addMusicToQueue(code, uri, data) {
 }
 
 function returnPopupData(popup) {
-    let inputs     = popup.querySelectorAll('input,textarea,select');
+    let inputs     = popup.querySelectorAll('input:not(.badge_checkbox),textarea,select,input[type="checkbox"]:checked');
+    console.log('inputs', inputs);
     let popup_data = {};
 
     for (const input of inputs) {
+
+        console.log('input', input);
+        console.log('input.type', input.type);
+        console.log('input.value', input.value);
+        console.log('input.checked', input.checked);
+
+        if (input.type === 'checkbox') {
+            popup_data[input.name] = input.value;
+            continue;
+        }
+
         popup_data[input.id] = input.value;
     }
 
@@ -464,3 +494,103 @@ if (window.location.href.indexOf('/admin') > -1) setInterval(function(){
 
     });
 }, 5000);
+
+
+/**
+ * busca itens em uma lista, mostrando ou escondendo os itens conforme o termo buscado
+ *
+ * @param   {string}        class_itens     A classe dos itens a serem buscados
+ * @param   {HTMLInputElement}  input_element  O elemento input onde o termo de busca foi digitado
+ */
+function searchItens(class_itens, input_element) {
+    let itens_search = document.querySelectorAll(`.${class_itens}:not(.hidden_in_search)`);
+    let itens_hidden = document.querySelectorAll(`.${class_itens}.hidden_in_search`);
+    let search_term  = prepareSearchStr(input_element.value);
+    let is_empty     = (search_term == '');
+
+    // mostrar ou esconder itens ocultaveis conforme a busca
+    itens_hidden.forEach(item => {
+        item.style.display = is_empty? 'table-row' : 'none';
+    });
+
+    // buscar itens conforme o termo
+    itens_search.forEach(item => {
+
+        // se a busca estiver vazia, mostrar todos os itens
+        if (is_empty) {
+            item.style.display = 'table-row';
+            return;
+        }
+
+        let text_searchable = prepareSearchStr(item.getAttribute('text_searchable') ?? '');
+        let contains_search = (text_searchable.indexOf(search_term) > -1);
+        item.style.display  = contains_search ? 'table-row' : 'none';
+    });
+}
+
+/**
+ * prepara uma string para busca, removendo acentos, deicando miniscula
+ *
+ * @param   {string}  str  A string para preparar
+ *
+ * @return  {string}       A string preparada
+ */
+function prepareSearchStr(str) {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+/** inicializa os triggers das checkboxes de badge
+ *
+ * @return  {void}
+ */
+function initTriggerBadgeCheckbox() {
+    let badge_checkboxes = document.querySelectorAll('.badge_checkbox');
+
+    for (const check of badge_checkboxes) {
+        check.addEventListener('change', function() {
+            clearBadgeCheckbox(this.id);
+            badgeCheckboxLabelAction();
+            calculateAndSetTotal(1);
+        });
+    }
+}
+
+/**
+ * limpa todas as checkboxes de badge selecionados, exceto a informada
+ *
+ * @param {string|null} current_id
+ */
+function clearBadgeCheckbox(current_id = null) {
+    let badge_checkboxes  = document.querySelectorAll('.badge_checkbox');
+    for (const check of badge_checkboxes) {
+        if (current_id && check.id === current_id) continue;
+
+        check.checked = false;
+    }
+
+    badgeCheckboxLabelAction();
+}
+
+/**
+ * ação de mudar o estilo dos labels do badge checkbox
+ *
+ * @return  {void}
+ */
+function badgeCheckboxLabelAction() {
+    let badge_checkboxes  = document.querySelectorAll('.badge_checkbox');
+    for (const check of badge_checkboxes) {
+        let label = document.querySelector(`label[for="${check.id}"]`);
+
+        if (!label) continue;
+
+        label.classList.remove('badge_checkbox_label--selected');
+
+        if (!check.checked) continue;
+
+        label.classList.add('badge_checkbox_label--selected');
+
+        break;
+    }
+}
+
+initTriggerBadgeCheckbox();
