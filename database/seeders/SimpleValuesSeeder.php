@@ -45,6 +45,9 @@ class SimpleValuesSeeder extends Seeder
 
         ['sv_title' => 'Novo',      'sv_group' => 'status_or'],
         ['sv_title' => 'Concluído', 'sv_group' => 'status_or'],
+
+        ['sv_title' => 'Drinks', 'sv_group' => 'category_pd'],
+        ['sv_title' => 'Doses',  'sv_group' => 'category_pd'],
     ];
 
     /**
@@ -52,7 +55,7 @@ class SimpleValuesSeeder extends Seeder
      */
     public function run(): void
     {
-        // SimpleValues::truncate();
+        SimpleValues::truncate();
 
         foreach (self::SEED_VALUES as $data)
             $results[] = (SimpleValues::create($data)->getKey() ?? null) . ' : ' . json_encode($data);
