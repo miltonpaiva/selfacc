@@ -100,14 +100,20 @@ class AccountController extends Controller
         return self::success("Criado !", $results);
     }
 
-    public function indexAdmin()
+    /**
+     * indexAdmin - Exibe a visão administrativa com todas as mesas ativas.
+     *
+     * @return Illuminate\Contracts\View\View
+     */
+    public function indexAdmin(): \Illuminate\Contracts\View\View
     {
         $tables = Account::getActives();
 
         $data =
         [
-            'products' => convertFieldsMapToFormList(Product::all()->toArray(), new Product()),
-            'tables'   => $tables,
+            'products'          => convertFieldsMapToFormList(Product::all()->toArray(), new Product()),
+            'products_agrouped' => Product::getProductsAgrouped(),
+            'tables'            => $tables,
         ];
 
         return view('index_admin', $data);
