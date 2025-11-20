@@ -69,7 +69,11 @@ class OrderController extends Controller
 
         if (!$order) return self::error('Pedido não encontrado.');
 
+        $account_id = $order->o_account_fk;
+
         $result = $order->delete();
+
+        Account::updateTotal($account_id);
 
         if (!$result) return self::error('Pedido não pôde ser removido.');
 
