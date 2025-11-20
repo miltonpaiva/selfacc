@@ -58,4 +58,23 @@ class OrderController extends Controller
 
         return self::success('Pedido concluído com sucesso.', ['tables' => $tables]);
     }
+
+    public function remove(Request $request): JsonResponse
+    {
+        $order_id = $request->get('order_id');
+
+        if (!$order_id) return self::error('ID do pedido não informado.');
+
+        $order = Order::find($order_id);
+
+        if (!$order) return self::error('Pedido não encontrado.');
+
+        $result = $order->delete();
+
+        if (!$result) return self::error('Pedido não pôde ser removido.');
+
+        $tables = Account::getActives();
+
+        return self::success('Pedido removido com sucesso.', ['tables' => $tables]);
+    }
 }

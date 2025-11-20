@@ -20,6 +20,7 @@ Route::post('/close-table',    [App\Http\Controllers\AccountController::class, '
 Route::post('/new-order',      [App\Http\Controllers\OrderController::class, 'upInsertOrder'])->name('order.new');
 Route::post('/update-order',   [App\Http\Controllers\OrderController::class, 'upInsertOrder'])->name('order.update');
 Route::post('/conclude-order', [App\Http\Controllers\OrderController::class, 'conclude'])->name('order.conclude');
+Route::post('/remove-order',   [App\Http\Controllers\OrderController::class, 'remove'])->name('order.remove');
 
 // tables
 Route::any('/get-tables', [App\Http\Controllers\AccountController::class, 'getTables'])->name('account.get_tables');

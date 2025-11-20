@@ -77,7 +77,7 @@ function concludeOrderAdmin(order_id) {
     let url    = '/api/conclude-order'
     let params = {order_id:order_id};
 
-    let confirm_conclude = confirm('O produto em questão ja foi entregue ao cliente?');
+    let confirm_conclude = confirm('O pedido em questão ja foi entregue ao cliente?');
     if (!confirm_conclude) return;
 
     sendRequestDefault(url, function (response) {
@@ -89,6 +89,32 @@ function concludeOrderAdmin(order_id) {
         // Mostrar mensagem de sucesso
         customAlert(
             `Pedido concluído com sucesso!`,
+            'Sucesso!'
+        );
+
+        tables_data = response.data.tables;
+        updateTablesList();
+        closeAllPopup();
+
+    }, params);
+}
+
+function removeOrderAdmin(order_id) {
+    let url    = '/api/remove-order'
+    let params = {order_id:order_id};
+
+    let confirm_conclude = confirm('Deseja remover o pedido em questão ?');
+    if (!confirm_conclude) return;
+
+    sendRequestDefault(url, function (response) {
+        if(!response || !response.success){
+            customAlert(response.message ?? 'Erro desconhecido!', 'Ops não foi possivel remover o pedido!');
+            return;
+        }
+
+        // Mostrar mensagem de sucesso
+        customAlert(
+            `Pedido removido com sucesso!`,
             'Sucesso!'
         );
 

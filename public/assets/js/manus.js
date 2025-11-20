@@ -991,19 +991,30 @@ function updateOrdersListAdmin() {
     table_command_number.innerHTML = `Mesa ${current_table_number}  | R$ ${table_data['total_formated']}`;
     more_order_values.innerHTML    = `PIX: R$ ${table_data['total_formated']} | C. Credito: R$ ${table_data['total_credit_card_formated']} | C. Debito: R$ ${table_data['total_debit_card_formated']}`;
 
-    console.log('orders_data', orders_data);
-
-    if (typeof orders_data == 'undefined' || !orders_data || orders_data.length == 0) return;
+    if (typeof orders_data == 'undefined' || !orders_data || orders_data.length == 0){
+        ordersList.innerHTML = `<div class="order-item">
+            <div class="order-item__header">
+                <h4 class="order-item__name">AINDA NÃO HÁ PEDIDOS</h4>
+            </div>
+        </div>`;
+        return;
+    }
 
     ordersList.innerHTML = '';
 
     for (const order of orders_data) {
 
         let order_action_btn = '';
+        let order_remove_btn   = '';
         if (order.is_new) {
          order_action_btn = `
                 <button class="product-popup__qty-btn" onclick="concludeOrderAdmin('${order.id}')">
                     <svg fill="#ffffff" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="256px" height="256px" viewBox="-16.56 -16.56 105.12 105.12" enable-background="new 0 0 72 72" xml:space="preserve" stroke="#ffffff" stroke-width="0.576"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.144"></g><g id="SVGRepo_iconCarrier"> <g> <path d="M24.014,70.462c-2.617,0-5.073-1.016-6.917-2.859L2.175,53.877c-1.908-1.906-2.926-4.364-2.926-6.979 s1.018-5.072,2.866-6.92c1.849-1.849,4.307-2.866,6.921-2.866c2.591,0,5.029,1,6.872,2.818l8.102,7.109L55.861,4.618 c0.057-0.075,0.119-0.146,0.186-0.213c1.849-1.85,4.307-2.867,6.921-2.867s5.072,1.018,6.921,2.867 c3.784,3.784,3.815,9.923,0.093,13.747L31.697,67.416c-0.051,0.065-0.106,0.128-0.165,0.188c-1.914,1.912-4.498,2.926-7.214,2.854 C24.216,70.46,24.116,70.462,24.014,70.462z M9.037,41.112c-1.546,0-2.999,0.602-4.093,1.695C3.851,43.9,3.25,45.353,3.25,46.898 s0.602,3,1.694,4.093l14.922,13.726c1.148,1.146,2.6,1.914,4.148,1.914l0.227,0.164c0.05,0,0.1,0,0.151,0l0.221-0.164 c1.51,0,2.929-0.654,4.008-1.69l38.275-49.294c0.051-0.065,0.105-0.148,0.165-0.207c2.256-2.258,2.256-5.939,0-8.195 c-1.094-1.094-2.547-1.701-4.093-1.701c-1.502,0-2.917,0.566-3.999,1.602L25.914,51.169c-0.335,0.445-0.84,0.73-1.394,0.787 c-0.551,0.057-1.106-0.118-1.525-0.486l-9.771-8.573c-0.032-0.028-0.064-0.058-0.095-0.089 C12.036,41.714,10.583,41.112,9.037,41.112z"></path> </g> </g></svg>
+                </button>
+            `;
+         order_remove_btn = `
+                <button class="product-popup__qty-btn" onclick="removeOrderAdmin('${order.id}')">
+                    <svg width="74px" height="74px" viewBox="-2.88 -2.88 29.76 29.76" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.096"></g><g id="SVGRepo_iconCarrier"> <path d="M8.00386 9.41816C7.61333 9.02763 7.61334 8.39447 8.00386 8.00395C8.39438 7.61342 9.02755 7.61342 9.41807 8.00395L12.0057 10.5916L14.5907 8.00657C14.9813 7.61605 15.6144 7.61605 16.0049 8.00657C16.3955 8.3971 16.3955 9.03026 16.0049 9.42079L13.4199 12.0058L16.0039 14.5897C16.3944 14.9803 16.3944 15.6134 16.0039 16.0039C15.6133 16.3945 14.9802 16.3945 14.5896 16.0039L12.0057 13.42L9.42097 16.0048C9.03045 16.3953 8.39728 16.3953 8.00676 16.0048C7.61624 15.6142 7.61624 14.9811 8.00676 14.5905L10.5915 12.0058L8.00386 9.41816Z" fill="#ffffff"></path> <path fill-rule="evenodd" clip-rule="evenodd" d="M23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12ZM3.00683 12C3.00683 16.9668 7.03321 20.9932 12 20.9932C16.9668 20.9932 20.9932 16.9668 20.9932 12C20.9932 7.03321 16.9668 3.00683 12 3.00683C7.03321 3.00683 3.00683 7.03321 3.00683 12Z" fill="#ffffff"></path> </g></svg>
                 </button>
             `;
         }
@@ -1036,6 +1047,7 @@ function updateOrdersListAdmin() {
             <div class="order-item__price">
                 <span class="order-item__total-price only_waiter">R$ ${parseFloat(order.total).toFixed(2).replace('.', ',')}</span>
 
+                ${order_remove_btn}
                 ${order_action_btn}
 
             </div>
