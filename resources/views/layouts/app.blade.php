@@ -29,15 +29,15 @@
     <footer class="footer" id="contato">
         <div class="footer__container">
             <div class="footer__brand">
-                <h3 class="footer__logo">MNW BLACK BEACH</h3>
+                <img class="footer__logo" src="assets/images/logo-mnw-black-beach.png" alt="logo-mnw-black-beach">
                 <p class="footer__tagline">Estilo, Música e Lazer</p>
             </div>
 
             <div class="footer__social">
                 <h4 class="footer__title">Siga a Vibe</h4>
                 <div class="social">
-                    <a href="#" class="social__link" aria-label="Instagram">
-                        <div class="social__icon social__icon--instagram"></div>
+                    <a href="https://www.instagram.com/mnwblackbeach" target="_black" class="social__link" aria-label="Instagram">
+                        <img class="social__icon social__icon--instagram" src="assets/images/logo_instagram.png" alt="mnw black beach instagram">
                     </a>
                     <a href="#" class="social__link" aria-label="Facebook">
                         <div class="social__icon social__icon--facebook"></div>
@@ -53,9 +53,9 @@
 
             <div class="footer__contact">
                 <h4 class="footer__title">Contato</h4>
-                <p class="footer__info">📍 Praia do [Local]</p>
+                <p class="footer__info">📍 R. Costa Matos, 90 - Jacarecanga, Fortaleza</p>
                 <p class="footer__info">📞 (00) 00000-0000</p>
-                <p class="footer__info">⏰ Seg-Dom: 9h às 19h</p>
+                <p class="footer__info">⏰ Quinta à Domingo: 9h às 19h</p>
             </div>
         </div>
 

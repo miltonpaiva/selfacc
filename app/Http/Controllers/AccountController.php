@@ -37,14 +37,14 @@ class AccountController extends Controller
         $queue['queue'] = array_merge($customer_queue, $queue['queue'] ?? []);
 
         $data =
-        [
-            'products'   => convertFieldsMapToFormList(Product::all()->toArray(), new Product()),
-            'categories' => SV::list('category_pd', true),
-            'auth_data'  => $auth_data,
-            'orders'     => $auth_data? Order::getActivesByTableNumber($auth_data['account']['table_number']) : null ,
-            'playing'    => $playing,
-            'queue'      => $queue,
-        ];
+            [
+                'products' => convertFieldsMapToFormList(Product::all()->toArray(), new Product()),
+                'categories' => SV::list('category_pd', true),
+                'auth_data' => $auth_data,
+                'orders' => $auth_data ? Order::getActivesByTableNumber($auth_data['account']['table_number']) : null,
+                'playing' => $playing,
+                'queue' => $queue,
+            ];
 
         return view('index', $data);
     }
@@ -52,7 +52,8 @@ class AccountController extends Controller
     public function createAccount(Request $request): object
     {
         $customer_validated_data = runModelValidates($request, new Customer());
-        if(is_object($customer_validated_data)) return $customer_validated_data;
+        if (is_object($customer_validated_data))
+            return $customer_validated_data;
 
         $customer_data = convertFieldsMapToModel($customer_validated_data, new Customer());
 
@@ -64,13 +65,14 @@ class AccountController extends Controller
 
         $initial_status_id = SV::getValueId('status_ac', 'Aberta');
         $request->merge(['customer_id' => $customer->getKey()]);
-        $request->merge(['status_id'   => $initial_status_id]);
+        $request->merge(['status_id' => $initial_status_id]);
 
         // realizando a indexação do cliente para busca
         (new Search($customer, ''))::runIndexes($customer->toArray());
 
         $account_validated_data = runModelValidates($request, new Account());
-        if(is_object($account_validated_data)) return $account_validated_data;
+        if (is_object($account_validated_data))
+            return $account_validated_data;
 
         $account_data = convertFieldsMapToModel($account_validated_data, new Account());
 
@@ -80,20 +82,20 @@ class AccountController extends Controller
             return self::error('Não foi possivel criar: ' . $th->getMessage(), $account_data, 500);
         }
 
-        if($request->get('is_admin')){
+        if ($request->get('is_admin')) {
             $tables = Account::getActives();
             return self::success("Criado !", ['tables' => $tables]);
         }
 
         $results =
-        [
-            'customer' => convertFieldsMapToForm($customer->toArray(), $customer),
-            'account'  => convertFieldsMapToForm($account->toArray(), $account),
-        ];
+            [
+                'customer' => convertFieldsMapToForm($customer->toArray(), $customer),
+                'account' => convertFieldsMapToForm($account->toArray(), $account),
+            ];
 
         // registrando a sessão do usuario
         self::setAuthData('customer', $results['customer']);
-        self::setAuthData('account',  $results['account']);
+        self::setAuthData('account', $results['account']);
 
         $results['orders'] = Order::getActivesByTableNumber($results['account']['table_number']);
 
@@ -110,16 +112,16 @@ class AccountController extends Controller
         $tables = Account::getActives();
 
         $data =
-        [
-            'products'          => convertFieldsMapToFormList(Product::all()->toArray(), new Product()),
-            'products_agrouped' => Product::getProductsAgrouped(),
-            'tables'            => $tables,
-        ];
+            [
+                'products' => convertFieldsMapToFormList(Product::all()->toArray(), new Product()),
+                'products_agrouped' => Product::getProductsAgrouped(),
+                'tables' => $tables,
+            ];
 
         return view('index_admin', $data);
     }
 
-    public  static function logout(): RedirectResponse
+    public static function logout(): RedirectResponse
     {
         self::setAuthData('', [], true);
 
@@ -135,16 +137,52 @@ class AccountController extends Controller
     public function closeTable(Request $request): object
     {
         $table_number = $request->get('table_number');
-        $account_id   = $request->get('account_id');
+        $account_id = $request->get('account_id');
 
         $is_table = ($table_number && is_numeric($table_number));
 
-        if ($is_table && !$table_number) return self::error('Número da mesa não informado.');
-        if (!$is_table && !$account_id) return self::error('ID do cliente não informado.');
+        if ($is_table && !$table_number)
+            return self::error('Número da mesa não informado.');
+        if (!$is_table && !$account_id)
+            return self::error('ID do cliente não informado.');
 
-        if ($is_table)  return Account::closeTableByNumber($table_number);
-        if (!$is_table) return Account::closeAccount($account_id);
+        if ($is_table)
+            return Account::closeTableByNumber($table_number);
+        if (!$is_table)
+            return Account::closeAccount($account_id);
 
         return self::error('Parâmetros inválidos.');
     }
+
+    public function painelGerencial(): \Illuminate\Contracts\View\View
+    {
+        $tables = Account::getActives();
+
+        return view('painel-gerencial.index_painel', [
+            'products' => convertFieldsMapToFormList(Product::all()->toArray(), new Product()),
+            'products_agrouped' => Product::getProductsAgrouped(),
+            'tables' => $tables,
+            'categories' => SV::list('category_pd', true),
+        ]);
+    }
+
+    public function show($id)
+    {
+        return Product::findOrFail($id);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $product = Product::findOrFail($id);
+
+        $product->update([
+            'name' => $request->name,
+            'price' => $request->price,
+            'description' => $request->description,
+            'category_id' => $request->category_id,
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
 }

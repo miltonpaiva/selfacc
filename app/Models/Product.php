@@ -35,6 +35,7 @@ class Product extends Model
         'p_description',
         'p_dt_created',
         'p_sv_category_pd_fk',
+        'p_image',
     ];
 
     /**
@@ -108,6 +109,7 @@ class Product extends Model
         'category_id'         => 'p_sv_category_pd_fk',
         'date_created'        => 'p_dt_created',
         'date_updated'        => 'p_dt_updated',
+        'image'               => 'p_image',
         'category_description'=> 'added_linked_category_description',
     ];
 

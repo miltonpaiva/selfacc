@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Banco de dados: `u195231857_selfacc_prod`
+-- Banco de dados: `selfacc_homo`
 --
 
 --

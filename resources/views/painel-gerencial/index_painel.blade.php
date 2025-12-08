@@ -12,12 +12,6 @@
     </style>
     <!-- CSS DA PÁGINA INICIAL -->
 
-    <script>
-        var tables_data   = <?= json_encode($tables ?? null); ?>;
-        var products_data = <?= json_encode($products ?? null); ?>;
-    </script>
-
-
 @endsection
 
 @section('header')
@@ -25,8 +19,7 @@
     <header class="header">
         <div class="header__container">
             <div class="header__logo">
-                <!-- <h1 class="logo">MNW BLACK BEACH</h1> -->
-                <img class="header__logo-img" src="assets/images/logo-mnw-black-beach.png" alt="logo-mnw-black-beach">
+                <h1 class="logo">MNW BLACK BEACH</h1>
             </div>
             <nav class="header__nav">
                 <button class="header__menu-toggle" aria-label="Menu">
@@ -43,20 +36,20 @@
 @endsection
 
 @section('body')
-    @include('sections.admin.menu')
-@endsection
 
-@section('popups')
-
-    @include('popups.alert')
-
-    <div class="custom-popup__overlay" style="display:none"></div>
+        @include('sections.painel-gerencial.settings')
 
 @endsection
+
+
+
+
+
 
 @section('javascript')
     <script src="{{ asset('assets/js/manus.js?' . uniqid()) }}"></script>
     <script src="{{ asset('assets/js/main.js?' . uniqid()) }}"></script>
+    <script src="{{ asset('assets/js/painel-gerencial.js?' . uniqid()) }}"></script>
 @endsection
 
 

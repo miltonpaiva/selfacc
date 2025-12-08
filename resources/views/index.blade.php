@@ -27,7 +27,9 @@
     <header class="header">
         <div class="header__container">
             <div class="header__logo">
-                <h1 class="logo">MNW BLACK BEACH</h1>
+                <!-- <h1 class="logo">MNW BLACK BEACH</h1> -->
+                <img class="header__logo-img" src="assets/images/logoheader-mnw-black-beach.png" alt="logo-mnw-black-beach">
+
             </div>
             <nav class="header__nav">
                 <button class="header__menu-toggle" aria-label="Menu">
