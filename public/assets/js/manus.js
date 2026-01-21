@@ -42,6 +42,7 @@ function openAllPopup() {
 
     popup.classList.add(class_str);
     document.body.style.overflow = 'hidden'; // Prevenir scroll do body
+    overlay.style.display = '';
 }
 
 function closeAllPopup() {
@@ -51,6 +52,7 @@ function closeAllPopup() {
 
     popup.classList.remove(class_str);
     document.body.style.overflow = ''; // Restaurar scroll do body
+    overlay.style.display = 'none';
 }
 
 // adiciona gatilhos para fechar o popup
@@ -644,7 +646,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const ordersBtn             = document.getElementById('ordersBtn');
     const ordersPopup           = document.getElementById('ordersPopup');
     const closeOrdersPopup      = document.getElementById('closeOrdersPopup');
-    const ordersOverlay         = document.getElementById('ordersOverlay');
+    const ordersOverlay         = document.getElementById('custom-popup__overlay');
     const ordersBadge           = document.getElementById('ordersBadge');
     const ordersList            = document.getElementById('ordersList');
     const ordersTotal           = document.getElementById('ordersTotal');
