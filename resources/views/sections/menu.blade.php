@@ -40,15 +40,12 @@
 
             <?php foreach ($products as $product): ?>
                 <article class="menu-item" data-category="<?= slugify($product['category_description']); ?>" data-product_id="<?= $product['id']; ?>">
-                    <!-- <div class="menu-item__image">
-                       
-                    </div> -->
                     <div>
-                        <img 
+                        <img
                             class="menu-item__image"
-                            src="<?= $product['image'] 
-                                ? asset('storage/' . $product['image']) 
-                                : asset('assets/images/imagemfundoitem.png'); ?>" 
+                            src="<?= @$product['image']
+                                ? asset('storage/' . $product['image'])
+                                : asset('assets/images/imagemfundoitem.png'); ?>"
                             alt="<?= $product['name']; ?>"
                         >
                     </div>

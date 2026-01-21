@@ -38,9 +38,9 @@
                         <div class="painel-gerencial__img-container">
                             <img 
                                 class="painel-gerencial__img"
-                                src="<?= $product['image'] 
-                                    ? asset('storage/' . $product['image']) 
-                                    : asset('assets/images/imagemfundoitem.png'); ?>" 
+                                src="<?= @$product['image']
+                                    ? asset('storage/' . $product['image'])
+                                    : asset('assets/images/imagemfundoitem.png'); ?>"
                                 alt="<?= $product['name']; ?>"
                             >
                         </div>
