@@ -2915,7 +2915,7 @@ body {
 .product-popup__content {
     position: relative;
     width: 100%;
-    max-width: 550px;
+    max-width: 1000px;
     max-height: 90vh;
     background-color: var(--color-white);
     border-radius: var(--radius-lg);
@@ -3665,7 +3665,7 @@ body {
     border-radius: var(--radius-lg);
     padding: var(--spacing-lg);
     width: 90%;
-    max-width: 500px;
+    max-width: 1000px;
     max-height: 90vh;
     overflow-y: auto;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);

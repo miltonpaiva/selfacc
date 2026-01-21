@@ -94,7 +94,7 @@ function concludeOrderAdmin(order_id) {
 
         tables_data = response.data.tables;
         updateTablesList();
-        closeAllPopup();
+        updateOrdersListAdmin();
 
     }, params);
 }
@@ -221,7 +221,7 @@ function registerOrder(popup) {
         if (response.data.tables) {
             tables_data = response.data.tables;
             updateTablesList();
-            closeAllPopup();
+            updateProductPopup();
             return;
         }
 
