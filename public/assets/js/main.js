@@ -176,7 +176,7 @@ function repeatOrder(product_id, account_id) {
 
     let fake_popup = {id:'fake_popup_order_id'};
 
-    registerOrder(fake_popup);
+    registerOrder(fake_popup, true);
 }
 
 /**
@@ -212,7 +212,7 @@ function registerCustomer(popup) {
 
 }
 
-function registerOrder(popup) {
+function registerOrder(popup, is_repeat = false) {
     let url    = '/api/new-order'
     let params = popups_data[popup.id];
 
@@ -239,7 +239,7 @@ function registerOrder(popup) {
         if (response.data.tables) {
             tables_data = response.data.tables;
             updateTablesList();
-            updateProductPopup();
+            if(!is_repeat) updateProductPopup();
             return;
         }
 
