@@ -1,0 +1,8 @@
+<!-- Alert Popup -->
+<div class="custom-popup" id="customLoading">
+    <div class="custom-popup__box custom-popup__box--alert">
+        <div class="custom-popup__icon" style="width: 200px;height: 200px;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" style="width: 200px;height: 200px;"><circle fill="#C4A76D" stroke="#C4A76D" stroke-width="19" r="15" cx="40" cy="100"><animate attributeName="opacity" calcMode="spline" dur="0.9" values="1;0;1;" keySplines=".5 0 .5 1;.5 0 .5 1" repeatCount="indefinite" begin="-.4"></animate></circle><circle fill="#C4A76D" stroke="#C4A76D" stroke-width="19" r="15" cx="100" cy="100"><animate attributeName="opacity" calcMode="spline" dur="0.9" values="1;0;1;" keySplines=".5 0 .5 1;.5 0 .5 1" repeatCount="indefinite" begin="-.2"></animate></circle><circle fill="#C4A76D" stroke="#C4A76D" stroke-width="19" r="15" cx="160" cy="100"><animate attributeName="opacity" calcMode="spline" dur="0.9" values="1;0;1;" keySplines=".5 0 .5 1;.5 0 .5 1" repeatCount="indefinite" begin="0"></animate></circle></svg>
+        </div>
+    </div>
+</div>

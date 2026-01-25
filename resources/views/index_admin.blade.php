@@ -49,6 +49,7 @@
 @section('popups')
 
     @include('popups.alert')
+    @include('popups.loading')
 
     <div class="custom-popup__overlay" style="display:none"></div>
 

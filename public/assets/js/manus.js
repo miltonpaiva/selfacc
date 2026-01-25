@@ -112,6 +112,21 @@ function customAlert(message, title = 'Sucesso!') {
     closePopupTriggers(popup);
 }
 
+function loadAction(show = true) {
+
+    let popup = document.querySelector('#customLoading');
+
+    if (!show){
+        closePopup(popup);
+        return;
+    }
+
+    popup.classList.add('custom-popup--active');
+
+    document.body.style.overflow = 'hidden';
+    overlay.style.display='flex'
+}
+
 function popupFirstAccess() {
     let popup = document.querySelector('#popup_first_access');
 
@@ -1100,6 +1115,8 @@ function createNewTable() {
         alert('Informe o nome do cliente');
         return;
     }
+
+    loadAction();
 
     let url    = '/api/new-account'
     let params = {

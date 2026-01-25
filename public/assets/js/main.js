@@ -70,15 +70,24 @@ function getCookie(cName) {
 
 function registerPopupData(popup) {
     popups_data[popup.id] = returnPopupData(popup);
-    console.log('popups_data', popups_data);
+    loadAction();
 }
 
+/**
+ * conclui a o pedido do usuario
+ *
+ * @param   {int}  order_id  [order_id description]
+ *
+ * @return  {void}
+ */
 function concludeOrderAdmin(order_id) {
     let url    = '/api/conclude-order'
     let params = {order_id:order_id};
 
     let confirm_conclude = confirm('O pedido em questão ja foi entregue ao cliente?');
     if (!confirm_conclude) return;
+
+    loadAction();
 
     sendRequestDefault(url, function (response) {
         if(!response || !response.success){
@@ -99,12 +108,21 @@ function concludeOrderAdmin(order_id) {
     }, params);
 }
 
+/**
+ * remove o pedido do usuario
+ *
+ * @param   {int}  order_id  [order_id description]
+ *
+ * @return  {void}
+ */
 function removeOrderAdmin(order_id) {
     let url    = '/api/remove-order'
     let params = {order_id:order_id};
 
     let confirm_conclude = confirm('Deseja remover o pedido em questão ?');
     if (!confirm_conclude) return;
+
+    loadAction();
 
     sendRequestDefault(url, function (response) {
         if(!response || !response.success){
@@ -120,7 +138,7 @@ function removeOrderAdmin(order_id) {
 
         tables_data = response.data.tables;
         updateTablesList();
-        closeAllPopup();
+        updateOrdersListAdmin();
 
     }, params);
 }
@@ -233,8 +251,6 @@ function registerOrder(popup) {
 }
 
 function closeTable() {
-    let confirm_close = confirm('Tem certeza que deseja encerrar a comanda?');
-    if (!confirm_close) return;
 
     let close_table_customer = document.querySelector('#close_table_customer').value;
 
@@ -243,12 +259,17 @@ function closeTable() {
         return;
     }
 
+    let confirm_close = confirm('Tem certeza que deseja encerrar a comanda?');
+    if (!confirm_close) return;
+
     let is_account = (close_table_customer != 'all' && close_table_customer != '');
+
+    loadAction();
 
     let url    = '/api/close-table'
     let params = {};
 
-    if (is_account)  params['account_id'] = close_table_customer;
+    if (is_account)  params['account_id']   = close_table_customer;
     if (!is_account) params['table_number'] = getTablesData()['number'];
 
     sendRequestDefault(url, function (response) {
@@ -479,14 +500,18 @@ function sendRequestDefault(url, callback = false, params = new Object(), is_tex
   .then((response)     => is_text? response.text() : response.json() )
   .then((responseJson) => {
 
+      loadAction(false);
+
       // chamando o callback se existir
       if (callback) callback(responseJson);
 
-  }).catch(function(e) {
-      console.error(`erro na requisição [${url}]:` , e);
+    }).catch(function(e) {
+        console.error(`erro na requisição [${url}]:` , e);
 
-      // chamando o callback se existir
-      if (callback) callback(false);
+        loadAction(false);
+
+        // chamando o callback se existir
+        if (callback) callback(false);
 
   });
 }
