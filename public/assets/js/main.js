@@ -606,11 +606,11 @@ function clearBadgeCheckbox(current_id = null) {
 function badgeCheckboxLabelAction() {
     let badge_checkboxes  = document.querySelectorAll('.badge_checkbox');
     for (const check of badge_checkboxes) {
-        let label = document.querySelector(`label[for="${check.id}"]`);
-
-        if (!label) continue;
+        let label            = document.querySelector(`label[for="${check.id}"]`);
+        let current_selected = document.querySelector('.badge_checkbox_label--selected');
 
         label.classList.remove('badge_checkbox_label--selected');
+        if (current_selected) current_selected.classList.remove('badge_checkbox_label--selected')
 
         if (!check.checked) continue;
 
