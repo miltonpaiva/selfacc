@@ -240,6 +240,7 @@ function registerOrder(popup, is_repeat = false) {
             tables_data = response.data.tables;
             updateTablesList();
             if(!is_repeat) updateProductPopup();
+            if(is_repeat) updateOrdersListAdmin();
             return;
         }
 
