@@ -46,8 +46,11 @@ class SimpleValuesSeeder extends Seeder
         ['sv_title' => 'Novo',      'sv_group' => 'status_or'],
         ['sv_title' => 'Concluído', 'sv_group' => 'status_or'],
 
-        ['sv_title' => 'Drinks', 'sv_group' => 'category_pd'],
-        ['sv_title' => 'Doses',  'sv_group' => 'category_pd'],
+        ['sv_title' => 'Drinks',     'sv_group' => 'category_pd'],
+        ['sv_title' => 'Doses',      'sv_group' => 'category_pd'],
+        ['sv_title' => 'Vinhos',     'sv_group' => 'category_pd'],
+        ['sv_title' => 'Espetinhos', 'sv_group' => 'category_pd'],
+        ['sv_title' => 'Combos',     'sv_group' => 'category_pd'],
     ];
 
     /**
