@@ -7,9 +7,10 @@
                 <input
                     type="text"
                     class="search-box__input"
-                    id="menuSearch"
                     placeholder="Buscar por nome do cliente, numero da mesa..."
                     aria-label="Buscar produtos"
+                    onkeyup="searchItens('search_item_tables', this, 'flex')"
+                    id="input_search_tables"
                 >
                 <button class="search-box__clear" id="clearSearch" aria-label="Limpar busca">
                     ✕

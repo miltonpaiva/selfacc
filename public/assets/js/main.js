@@ -545,6 +545,10 @@ if (window.location.href.indexOf('/admin') > -1) setInterval(function(){
         tables_data = response.data.tables;
         updateTablesList();
 
+        // garantindo a persistencia da busca mesmo com a atualização dos dados
+        if (document.querySelector("#input_search_tables"))
+            searchItens('search_item_tables', document.querySelector("#input_search_tables"), 'flex')
+
     });
 }, 5000);
 
@@ -552,10 +556,10 @@ if (window.location.href.indexOf('/admin') > -1) setInterval(function(){
 /**
  * busca itens em uma lista, mostrando ou escondendo os itens conforme o termo buscado
  *
- * @param   {string}        class_itens     A classe dos itens a serem buscados
+ * @param   {string}            class_itens     A classe dos itens a serem buscados
  * @param   {HTMLInputElement}  input_element  O elemento input onde o termo de busca foi digitado
  */
-function searchItens(class_itens, input_element) {
+function searchItens(class_itens, input_element, display_type = 'table-row') {
     let itens_search = document.querySelectorAll(`.${class_itens}:not(.hidden_in_search)`);
     let itens_hidden = document.querySelectorAll(`.${class_itens}.hidden_in_search`);
     let search_term  = prepareSearchStr(input_element.value);
@@ -563,7 +567,7 @@ function searchItens(class_itens, input_element) {
 
     // mostrar ou esconder itens ocultaveis conforme a busca
     itens_hidden.forEach(item => {
-        item.style.display = is_empty? 'table-row' : 'none';
+        item.style.display = is_empty? display_type : 'none';
     });
 
     // buscar itens conforme o termo
@@ -571,13 +575,13 @@ function searchItens(class_itens, input_element) {
 
         // se a busca estiver vazia, mostrar todos os itens
         if (is_empty) {
-            item.style.display = 'table-row';
+            item.style.display = display_type;
             return;
         }
 
         let text_searchable = prepareSearchStr(item.getAttribute('text_searchable') ?? '');
         let contains_search = (text_searchable.indexOf(search_term) > -1);
-        item.style.display  = contains_search ? 'table-row' : 'none';
+        item.style.display  = contains_search ? display_type : 'none';
     });
 }
 

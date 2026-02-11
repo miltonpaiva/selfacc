@@ -1087,10 +1087,15 @@ function updateTablesList() {
     temp_items.forEach(item => item.remove());
 
     Object.values(tables_data).forEach(table => {
-        let article = document.createElement('article');
+        let article         = document.createElement('article');
+        let text_searchable = `Mesa ${table['number']} ${table['customers'].map(customer => customer.name).join(' ')}`;
 
         article.classList.add('menu-item');
         article.classList.add('temp-item');
+
+        // para a busca
+        article.classList.add('search_item_tables');
+        article.setAttribute('text_searchable', text_searchable);
 
         article.innerHTML += getTablesTemplate(table);
 
