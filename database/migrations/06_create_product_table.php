@@ -21,7 +21,8 @@ return new class extends Migration
             $table->string('p_name');         // string, not null
             // Decimal: 8 dígitos no total, 2 casas decimais (ex: 999999.99)
             $table->decimal('p_price', 8, 2); // decimal:8,2, not null
-            $table->string('p_description');  // string, not null
+            $table->string('p_description')->nullable();  // string
+            $table->string('p_image')->nullable();  // string
 
             // Chave Estrangeira (FK)
             // Referencia a tabela 'simple_values' (chave 'sv_id') para a categoria
