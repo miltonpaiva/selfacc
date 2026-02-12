@@ -51,6 +51,11 @@ class SimpleValuesSeeder extends Seeder
         ['sv_title' => 'Vinhos',     'sv_group' => 'category_pd'],
         ['sv_title' => 'Espetinhos', 'sv_group' => 'category_pd'],
         ['sv_title' => 'Combos',     'sv_group' => 'category_pd'],
+
+        ['sv_title' => 'Grama',           'sv_group' => 'units_pd'],
+        ['sv_title' => 'Mililitro',       'sv_group' => 'units_pd'],
+        ['sv_title' => 'Unidade',         'sv_group' => 'units_pd'],
+        ['sv_title' => 'Caixa ou Pacote', 'sv_group' => 'units_pd'],
     ];
 
     /**
