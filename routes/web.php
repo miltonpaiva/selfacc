@@ -13,7 +13,6 @@ Route::prefix('admin')->group(function() {
     // Produtos
     Route::get('/products/{id}', [App\Http\Controllers\ProductController::class, 'show']);
     Route::put('/products/{id}', [App\Http\Controllers\ProductController::class, 'update']);
-    Route::post('/products', [App\Http\Controllers\ProductController::class, 'store'])->name('products.create');
 
     // Categorias
     Route::get('/categories', [App\Http\Controllers\ProductController::class, 'getCategories'])->name('categories.list');
