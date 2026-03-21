@@ -15,7 +15,7 @@ async function openEditProductPopup(productId) {
         document.getElementById('edit_price').value = product.p_price;
         document.getElementById('edit_description').value = product.p_description || '';
         document.getElementById('edit_category').value = product.p_sv_category_pd_fk;
-        
+
         // Resetar arquivo
         const editImageInput = document.getElementById('edit_image');
         if (editImageInput) {
@@ -164,10 +164,10 @@ function openNewProductPopup() {
         return;
     }
 
-    document.getElementById('new_name').value = '';
-    document.getElementById('new_price').value = '';
+    document.getElementById('new_name').value        = '';
+    document.getElementById('new_price').value       = '';
     document.getElementById('new_description').value = '';
-    document.getElementById('new_image').value = '';
+    document.getElementById('new_image').value       = '';
 
     // Mostrar popup
     popup.style.display = 'flex';
@@ -183,44 +183,43 @@ function closeNewProductPopup() {
 }
 
 async function createProduct() {
-    const name = document.getElementById('new_name').value;
-    const price = document.getElementById('new_price').value;
+    const name        = document.getElementById('new_name').value;
+    const price       = document.getElementById('new_price').value;
     const description = document.getElementById('new_description').value;
     const category_id = document.getElementById('new_category').value;
-    const imageFile = document.getElementById('new_image').files[0];
+    const imageFile   = document.getElementById('new_image').files[0];
+
+    let product_data = returnPopupData(document.getElementById('newProductPopup'), true);
+
+    console.log('product_data', product_data);
 
     if (!name || !price || !category_id) {
         alert("Nome, Preço e Categoria são obrigatórios!");
         return;
     }
 
-    const formData = new FormData();
-    formData.append('p_name', name);
-    formData.append('p_price', price);
-    formData.append('p_description', description);
-    formData.append('p_sv_category_pd_fk', category_id);
-    if (imageFile) {
-        formData.append('image', imageFile);
-    }
-
     try {
-        const response = await fetch('/admin/products', {
-            method: "POST",
-            headers: {
-                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: formData
-        });
 
-        const result = await response.json();
+        sendRequestDefault('/api/new-product', function (response) {
+            if (!response || !response.success) {
+                customAlert(
+                    "Erro ao criar produto: " + (response.message || 'erro descnhecido ao criar produto'),
+                    'Ops'
+                );
 
-        if (result.success) {
-            alert("Produto criado com sucesso!");
+                return;
+            }
+
+            customAlert(
+                "Produto criado com sucesso!",
+                'Sucesso'
+            );
+
             closeNewProductPopup();
             location.reload();
-        } else {
-            alert("Erro ao criar produto: " + (result.message || ''));
-        }
+
+        }, product_data);
+
     } catch (error) {
         console.error('Erro:', error);
         alert("Erro ao criar produto: " + error.message);
