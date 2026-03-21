@@ -444,7 +444,7 @@ function addMusicToQueue(code, uri, data) {
     }, params);
 }
 
-function returnPopupData(popup) {
+function returnPopupData(popup, is_name_key = false) {
     let inputs     = popup.querySelectorAll('input:not(.badge_checkbox),textarea,select,input[type="checkbox"]:checked');
     console.log('inputs', inputs);
     let popup_data = {};
@@ -456,7 +456,7 @@ function returnPopupData(popup) {
         console.log('input.value', input.value);
         console.log('input.checked', input.checked);
 
-        if (input.type === 'checkbox') {
+        if (input.type === 'checkbox' || is_name_key) {
             popup_data[input.name] = input.value;
             continue;
         }
