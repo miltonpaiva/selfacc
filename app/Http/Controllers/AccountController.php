@@ -113,9 +113,9 @@ class AccountController extends Controller
 
         $data =
             [
-                'products' => convertFieldsMapToFormList(Product::all()->toArray(), new Product()),
+                'products'          => convertFieldsMapToFormList(Product::all()->toArray(), new Product()),
                 'products_agrouped' => Product::getProductsAgrouped(),
-                'tables' => $tables,
+                'tables'            => $tables,
             ];
 
         return view('index_admin', $data);
@@ -159,10 +159,11 @@ class AccountController extends Controller
         $tables = Account::getActives();
 
         return view('painel-gerencial.index_painel', [
-            'products' => convertFieldsMapToFormList(Product::all()->toArray(), new Product()),
+            'products'          => convertFieldsMapToFormList(Product::all()->toArray(), new Product()),
             'products_agrouped' => Product::getProductsAgrouped(),
-            'tables' => $tables,
-            'categories' => SV::list('category_pd', true),
+            'tables'            => $tables,
+            'categories'        => SV::list('category_pd', true),
+            'units'             => SV::list('units_pd', true),
         ]);
     }
 

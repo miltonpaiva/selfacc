@@ -343,7 +343,8 @@ class MusicQueue extends Model
     public static function setReproducing(string $code): void
     {
         self::where([
-            ['mq_code', '=', $code],
+            ['mq_code',            '=', $code],
+            ['mq_sv_status_mq_fk', '=', SV::getValueId('status_mq', 'A Seguir')],
         ])
         ->limit(1)
         ->update(
@@ -354,7 +355,8 @@ class MusicQueue extends Model
     public static function setNext(string $code): void
     {
         self::where([
-            ['mq_code', '=', $code],
+            ['mq_code',            '=', $code],
+            ['mq_sv_status_mq_fk', '=', SV::getValueId('status_mq', 'Na Fila')],
         ])
         ->limit(1)
         ->update(

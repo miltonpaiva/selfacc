@@ -116,6 +116,8 @@ function loadAction(show = true) {
 
     let popup = document.querySelector('#customLoading');
 
+    if (!popup) return;
+
     if (!show){
         closePopup(popup);
         return;

@@ -59,13 +59,13 @@
 
 @section('body')
 
-    @include('sections.hero')
+    {{-- @include('sections.hero') --}}
 
     @include('sections.playlist')
 
-    @include('sections.common')
+    {{-- @include('sections.common') --}}
 
-    @include('sections.menu')
+    {{-- @include('sections.menu') --}}
 
 @endsection
 

@@ -191,6 +191,8 @@ function registerCustomer(popup) {
     let url    = '/api/new-account'
     let params = popups_data[popup.id];
 
+    params['code'] = 1234;
+
     sendRequestDefault(url, function (response) {
 
         console.log('response', response);
@@ -203,7 +205,7 @@ function registerCustomer(popup) {
         auth_data   = response.data
         orders_data = response.data.orders;
 
-        customAlert('Sinta se a vontade para fazer seus pedidos ou se preferir solicite que um garçom venha lhe atender no botão abaixo. Lembre-se, a senha solicitada anteriormente será necessaria para fazer pedidos no site.', `É um prazer lhe conhecer ${response.data.customer.name}!`)
+        customAlert('Sinta se a vontade para pedir sua musica e vamos fazer nossa festa !.', `É um prazer lhe conhecer ${response.data.customer.name}!`)
         closePopup(popup);
         updateOrdersList();
         verifyTableNumber();

@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 
 use App\Models\Music;
 use App\Models\MusicQueue;
+use App\Models\Customer;
 use App\Models\SimpleValues as SV;
 
 class MusicQueueController extends Controller
@@ -54,7 +55,7 @@ class MusicQueueController extends Controller
         if (!isset($music_playing['progress_percent']))
             return self::success('lista de reprodução', ['playing' => [], 'queue' => []]);
 
-        $is_end_song                   = ($music_playing['progress_percent'] >= 95);
+        $is_end_song                   = ($music_playing['progress_percent'] >= 90);
         $no_has_next_seted             = empty($customer_next);
         $no_has_playing_seted          = empty($customer_playing);
         $current_playing_is_a_customer = (!$no_has_playing_seted && $customer_playing['id'] == $music_playing['item']['id']);
@@ -100,18 +101,22 @@ class MusicQueueController extends Controller
 
     public function addQueue(Request $request): object
     {
-        $request->merge(['position' => 1]);
+        $request->merge(['position'   => 1]);
         $request->merge(['is_auction' => false]);
-        $request->merge(['status_id' => SV::getValueId('status_mq', 'Na Fila')]);
+        $request->merge(['status_id'  => SV::getValueId('status_mq', 'Na Fila')]);
 
         $queue          = (new Music())::getQueue();
+        $customer       = Customer::find($request->input('customer_id'))->c_name;
         $customer_queue = MusicQueue::getQueue();
-
         $queue['queue'] = array_merge($customer_queue, $queue['queue']);
 
-        $exist = (searchAll($queue['queue'], 'id', $request->get('code')) !== null);
+        $music_exist = (searchAll($queue['queue'], 'id', $request->get('code')) !== null);
 
-        if ($exist) return self::error('A musica desejada ja se encontra na fila de reprodução', $queue);
+        if ($music_exist) return self::error('A musica desejada ja se encontra na fila de reprodução', $queue);
+
+        $customer_exist = (searchAll($queue['queue'], 'customer', $customer) !== null);
+
+        if ($customer_exist) return self::error('O cliente já tem uma musica na fila de reprodução, aguarde para adicionar uma musica novamente!', $queue);
 
         $response = self::newOrUpdateModel($request, new MusicQueue(), null, false);
 
