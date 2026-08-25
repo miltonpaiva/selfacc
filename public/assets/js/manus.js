@@ -874,6 +874,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     search_btn.addEventListener('click', function(e) {
+        loadAction();
         searchMusicRequest(musicSearchInput.value);
     });
 

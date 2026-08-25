@@ -89,6 +89,8 @@
 
     @include('popups.first_access')
 
+    @include('popups.loading')
+
     <div class="custom-popup__overlay" style="display:none"></div>
 
 @endsection

@@ -415,6 +415,8 @@ function searchMusicRequest(term) {
 
 function addMusicToQueue(code, uri, data) {
 
+    loadAction();
+
     let customer = getUserData()['customer'];
     let account  = getUserData()['account'];
 
