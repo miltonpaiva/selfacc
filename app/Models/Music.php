@@ -128,6 +128,9 @@ class Music
         $cached_today       = (strpos($cache_token['expires_date'] ?? '', date('Y-m-d')) !== false);
         $request_token_data = self::sendTokenRequest(($is_expired && self::getRefreshToken()));
 
+        // caso o refresh token tenha vencido
+        if(!isset($request_token_data['json']['access_token'])) $request_token_data = self::sendTokenRequest();
+
         if(!isset($request_token_data['json']['access_token'])) return null;
 
         $token_data                 = $request_token_data['json'];
@@ -419,6 +422,8 @@ class Music
             'raw'    => $server_output,
             'code'   => $status_code,
             'errors' => $errors ?? null,
+            'params' => $params,
+            'token'  => $token,
         ];
     }
 
