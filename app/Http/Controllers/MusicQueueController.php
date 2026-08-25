@@ -86,6 +86,7 @@ class MusicQueueController extends Controller
 
         // limpando as musicas reproduzidas
         if ($is_end_song && $current_playing_is_a_customer) MusicQueue::clearReproducing();
+        if (!$no_has_playing_seted && !$current_playing_is_a_customer) MusicQueue::clearReproducing();
 
         $queue = array_merge($customer_queue, $music_queue);
 
