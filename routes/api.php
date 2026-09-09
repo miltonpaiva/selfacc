@@ -33,3 +33,4 @@ Route::post('/music-set-device',   [App\Http\Controllers\MusicQueueController::c
 Route::any('/music-get-queue',     [App\Http\Controllers\MusicQueueController::class, 'getQueue'])->name('music.get_queue');
 Route::post('/music-search',       [App\Http\Controllers\MusicQueueController::class, 'search'])->name('music.search');
 Route::post('/music-queue-add',    [App\Http\Controllers\MusicQueueController::class, 'addQueue'])->name('music.add_queue');
+Route::get('/music-queue-update',  [App\Http\Controllers\MusicQueueController::class, 'updateQueue'])->name('music.update_queue');
