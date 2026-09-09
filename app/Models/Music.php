@@ -309,6 +309,9 @@ class Music
      */
     public static function addToQueue(string $device_id, string $track_url): array
     {
+        $playing_duplicate = searchAll(self::getQueue(), 'url', $track_url);
+        if($playing_duplicate) return [];
+
         $params =
         [
             'uri'       => $track_url,

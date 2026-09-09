@@ -252,6 +252,7 @@ class MusicQueue extends Model
     public static function getQueue(): array
     {
         $playing = self::getPlaing();
+        $played  = self::getPlayed();
 
         $queue = self::whereIn(
             'mq_sv_status_mq_fk',
@@ -267,10 +268,10 @@ class MusicQueue extends Model
                 'id'           => $item['mq_code'],
                 'queue_id'     => $item['mq_id'],
                 'name'         => $data_arr[0],
-                'duration_min' => $data_arr[2],
+                'duration_min' => $data_arr[2] ?? '',
                 'uri'          => $item['mq_uri'],
                 'album_name'   => '',
-                'artists'      => $data_arr[1],
+                'artists'      => $data_arr[1] ?? '',
                 'account_id'   => $item['mq_customer_fk'],
                 'customer'     => $item['added_linked_customer_name'],
                 'status'       => $item['added_linked_status_description'],
@@ -282,7 +283,7 @@ class MusicQueue extends Model
 
         $next = searchAll($queue, 'status_id', SV::getValueId('status_mq', 'A Seguir'), true) ?? [];
 
-        return compact('playing', 'next', 'queue');
+        return compact('playing', 'next', 'queue', 'played');
     }
 
     public static function getPlaing(): array
@@ -301,10 +302,10 @@ class MusicQueue extends Model
             'id'           => $playing['mq_code'],
             'queue_id'     => $playing['mq_id'],
             'name'         => $data_arr[0],
-            'duration_min' => $data_arr[2],
+            'duration_min' => $data_arr[2] ?? '',
             'uri'          => $playing['mq_uri'],
             'album_name'   => '',
-            'artists'      => $data_arr[1],
+            'artists'      => $data_arr[1] ?? '',
             'customer_id'  => $playing['mq_customer_fk'],
             'customer'     => $playing['added_linked_customer_name'],
             'status'       => $playing['added_linked_status_description'],
@@ -316,30 +317,32 @@ class MusicQueue extends Model
 
     public static function getPlayed(): array
     {
-        $played = self::where([
+        $played_data = self::where([
             ['mq_sv_status_mq_fk', '=', SV::getValueId('status_mq', 'Reproduzido')],
-        ])->get()->first();
+        ])->orderBy('mq_id', 'desc')->limit(20)->get();
 
-        if(!$played) return [];
+        if(!$played_data) return [];
 
-        $played = $played->toArray();
+        foreach ($played_data as $played) {
+            $played = $played->toArray();
 
-        $data_arr = explode(';', $played['mq_str']);
-        $played  =
-        [
-            'id'           => $played['mq_code'],
-            'queue_id'     => $played['mq_id'],
-            'name'         => $data_arr[0],
-            'duration_min' => $data_arr[2],
-            'uri'          => $played['mq_uri'],
-            'album_name'   => '',
-            'artists'      => $data_arr[1],
-            'customer'     => $played['added_linked_customer_name'],
-            'status'       => $played['added_linked_status_description'],
-            'status_id'    => $played['mq_sv_status_mq_fk'],
-        ];
+            $data_arr = explode(';', $played['mq_str']);
+            $played_list[] =
+            [
+                'id'           => $played['mq_code'],
+                'queue_id'     => $played['mq_id'],
+                'name'         => $data_arr[0],
+                'duration_min' => $data_arr[2] ?? '',
+                'uri'          => $played['mq_uri'],
+                'album_name'   => '',
+                'artists'      => $data_arr[1] ?? '',
+                'customer'     => $played['added_linked_customer_name'],
+                'status'       => $played['added_linked_status_description'],
+                'status_id'    => $played['mq_sv_status_mq_fk'],
+            ];
+        }
 
-        return $played;
+        return $played_list ?? [];
     }
 
     public static function setReproducing(string $code): void
