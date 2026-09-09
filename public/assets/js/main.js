@@ -304,8 +304,8 @@ function setPlaying() {
 }
 
 function getPlayingTemplate(playing) {
-    let user_name = `<span class="playlist__badge playlist__badge--user">👤 ...</span>`;
-    user_name = '';
+    let user_name = `<span class="playlist__badge playlist__badge--user">👤 ${playing.item.customer || '...'}</span>`;
+    if (!playing.item.customer) user_name = '';
 
     return `
         <div class="playlist__player-cover">
