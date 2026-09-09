@@ -18,6 +18,8 @@
 /public/storage
 /storage/*.key
 /storage/pail
+/storage/selfacc_files_cache
+/storage/selfacc_search_local_indexes
 /vendor
 Homestead.json
 Homestead.yaml
