@@ -84,18 +84,24 @@ class MusicQueueController extends Controller
         $request->merge(['is_auction' => false]);
         $request->merge(['status_id'  => SV::getValueId('status_mq', 'Na Fila')]);
 
-        $queue          = (new Music())::getQueue();
+        $palyer_queue   = (new Music())::getQueue();
         $customer       = Customer::find($request->input('customer_id'))->c_name;
         $customer_queue = MusicQueue::getQueue();
-        $queue['queue'] = array_merge($customer_queue['queue'], $queue['queue']);
+        $palyer_queue['queue'] = array_merge($customer_queue['queue'], $palyer_queue['queue']);
 
-        $music_exist = (searchAll($queue['queue'], 'id', $request->get('code')) !== null);
+        $music_exist_in_queue = (searchAll($palyer_queue['queue'], 'id', $request->get('code')) !== null);
 
-        if ($music_exist) return self::error('A musica desejada ja se encontra na fila de reprodução', $queue);
+        if ($music_exist_in_queue) return self::error('A musica desejada ja se encontra na fila de reprodução', $palyer_queue);
 
-        $customer_exist = (searchAll($queue['queue'], 'customer', $customer) !== null);
+        if($palyer_queue['playing']['id'] == $request->get('code')) return self::error('A musica desejada ja esta tocando', $palyer_queue);
 
-        if ($customer_exist) return self::error('O cliente já tem uma musica na fila de reprodução, aguarde para adicionar uma musica novamente!', $queue);
+        $customer_exist = (searchAll($palyer_queue['queue'], 'customer', $customer) !== null);
+
+        if ($customer_exist) return self::error('O cliente já tem uma musica na fila de reprodução, aguarde para adicionar uma musica novamente!', $palyer_queue);
+
+        $music_played_recent = (searchAll(array_slice($customer_queue['played'], 0, 5), 'id', $request->get('code')) !== null);
+
+        if ($music_played_recent) return self::error('A musica desejada tocou recentemente', $palyer_queue);
 
         $response = self::newOrUpdateModel($request, new MusicQueue(), null, false);
 
@@ -105,7 +111,7 @@ class MusicQueueController extends Controller
 
         $new_data = $data['data'];
 
-        $new_data['queue']= $queue['queue'];
+        $new_data['queue']= $palyer_queue['queue'];
 
         return self::success($data['message'], $new_data);
     }
